@@ -1,0 +1,26 @@
+# Rust virtual workspace. See <https://doc.rust-lang.org/cargo/reference/workspaces.html#virtual-workspace>
+[workspace]
+
+resolver = "2"
+
+members = [
+  "src-tauri",
+]
+
+[workspace.dependencies]
+tauri = "2"
+tauri-plugin-opener = "2"
+serde = "1.0.219"
+serde_json = "1.0.143"
+
+# Build dependencies
+tauri-build = "2"
+
+# Internal dependencies
+home_repair = { path = "src-tauri" }
+
+# Pin versions in workspace, propagate and unify to member packages
+[workspace.package]
+version = "0.1.0"
+rust-version = "1.88.0"
+edition = "2024"
