@@ -2,12 +2,12 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "home_repair_handyman",
   "version": "0.1.0",
-  "identifier": "com.home_repair_handyman.app",
+  "identifier": "com.home-repair-handyman.app",
   "build": {
-    "beforeDevCommand": "yarn dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "yarn build",
-    "frontendDist": "../dist"
+    "beforeDevCommand": "just dev-fe handyman_app",
+    "devUrl": "http://localhost:5000",
+    "beforeBuildCommand": "just build-fe handyman_app",
+    "frontendDist": "../www/packages/handyman_app/dist"
   },
   "app": {
     "windows": [

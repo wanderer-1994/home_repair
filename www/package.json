@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "version": "0.1.0",
+  "scripts": {
+    "lint": "eslint 'packages/customer_app/src/**/*.{js,jsx,ts,tsx}'",
+    "format": "prettier -w 'packages/**/*.{js,jsx,ts,tsx}'",
+    "format-check": "prettier --check 'packages/**/*.{js,jsx,ts,tsx}'"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "eslint": "^9.35.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.4.0",
+    "jiti": "^2.5.1",
+    "prettier": "3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "typescript-eslint": "^8.43.0"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}
