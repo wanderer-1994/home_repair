@@ -3,17 +3,17 @@ export ROOT_DIR := justfile_directory()
 setup-install-js:
   yarn
 
-setup-init-android:
-  yarn tauri android init
+setup-init-android app:
+  cd {{app}} && cargo-tauri android init
 
-setup-init-ios:
-  yarn tauri ios init
+setup-init-ios app:
+  cd {{app}} && cargo-tauri ios init
 
-dev-desktop:
-  yarn tauri dev
+dev-desktop app:
+  cd {{app}} && cargo-tauri dev
 
-dev-android:
-  yarn tauri android dev
+dev-android app:
+  cd {{app}} && cargo-tauri android dev
 
-dev-ios:
-  yarn tauri ios dev
+dev-ios app:
+  cd {{app}} && cargo-tauri ios dev

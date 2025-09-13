@@ -28,4 +28,5 @@ dist-ssr
 /target/
 
 # Tauri generated schema files for capabilities auto-completion
-src-tauri/gen/schemas
+customer_app/gen/schemas
+handyman_app/gen/schemas
