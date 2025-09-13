@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "home_repair",
+  "productName": "home_repair_handyman",
   "version": "0.1.0",
-  "identifier": "com.home_repair.app",
+  "identifier": "com.home_repair_handyman.app",
   "build": {
     "beforeDevCommand": "yarn dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "home_repair",
+        "title": "Handyman",
         "width": 800,
         "height": 600
       }

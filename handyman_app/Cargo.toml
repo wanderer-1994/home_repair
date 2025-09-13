@@ -1,6 +1,6 @@
 [package]
-name = "home_repair"
-description = "A Tauri App"
+name = "handyman_app"
+description = "Home repair app for handyman"
 edition.workspace = true
 version.workspace = true
 rust-version.workspace = true
@@ -15,5 +15,5 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 
 [[bin]]
-name = "home_repair_main"
+name = "handyman_app_main"
 path = "src/main.rs"
