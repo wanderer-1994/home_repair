@@ -2,12 +2,12 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "home_repair_customer",
   "version": "0.1.0",
-  "identifier": "com.home_repair_customer.app",
+  "identifier": "com.home-repair-customer.app",
   "build": {
-    "beforeDevCommand": "yarn dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "yarn build",
-    "frontendDist": "../dist"
+    "beforeDevCommand": "just dev-fe customer_app",
+    "devUrl": "http://localhost:4000",
+    "beforeBuildCommand": "just build-fe customer_app",
+    "frontendDist": "../www/packages/customer_app/dist"
   },
   "app": {
     "windows": [
