@@ -1,0 +1,13 @@
+[package]
+name = "jwt_signer"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+jsonwebtoken.workspace = true
+serde.workspace = true
+chrono = { workspace = true, features = ["serde"] }
+
+# Internal dependencies
+error.workspace = true

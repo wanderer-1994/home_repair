@@ -1,0 +1,11 @@
+[package]
+name = "random_util"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rand.workspace = true
+
+# Internal dependencies
+error.workspace = true

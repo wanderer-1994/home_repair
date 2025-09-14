@@ -1,0 +1,11 @@
+[package]
+name = "argon2_hash"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+argon2 = { workspace = true, features = ["std"] }
+
+# Internal dependencies
+error.workspace = true
