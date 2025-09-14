@@ -1,0 +1,28 @@
+[package]
+name = "error"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[features]
+cloneable = []
+
+[dependencies]
+prost.workspace = true
+prost-types.workspace = true
+tokio.workspace = true
+tonic.workspace = true
+backtrace.workspace = true
+tracing.workspace = true
+tracing-error.workspace = true
+axum.workspace = true
+async-graphql.workspace = true
+indexmap.workspace = true
+diesel.workspace = true
+diesel-async = { workspace = true, features = ["postgres", "deadpool"] }
+argon2.workspace = true
+jsonwebtoken.workspace = true
+serde_json.workspace = true
+
+[build-dependencies]
+prost-build.workspace = true

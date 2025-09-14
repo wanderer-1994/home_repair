@@ -1,0 +1,6 @@
+# The main docker file that init docker sdk for local development
+services:
+  home-repair-db:
+    extends:
+      file: "./postgres/docker-compose.yaml"
+      service: postgres-db

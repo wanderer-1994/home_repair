@@ -1,0 +1,21 @@
+[package]
+name = "db_utils"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+tokio.workspace = true
+diesel = { workspace = true, features = ["chrono"] }
+diesel_migrations = { workspace = true, features = ["postgres"] }
+diesel-async = { workspace = true, features = [
+    "postgres",
+    "deadpool",
+    "async-connection-wrapper",
+] }
+regex.workspace = true
+percent-encoding.workspace = true
+
+# Internal dependencies
+error.workspace = true
+paging.workspace = true

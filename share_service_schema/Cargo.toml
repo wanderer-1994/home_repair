@@ -1,0 +1,18 @@
+[package]
+name = "share_service_schema"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+diesel = { workspace = true, features = ["postgres"] }
+diesel_migrations = { workspace = true, features = ["postgres"] }
+diesel-async = { workspace = true, features = [
+    "postgres",
+    "deadpool",
+    "async-connection-wrapper",
+] }
+
+# Internal dependencies
+error.workspace = true
+db_utils.workspace = true

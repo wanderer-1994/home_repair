@@ -1,0 +1,8 @@
+[package]
+name = "paging"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+error.workspace = true

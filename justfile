@@ -15,6 +15,12 @@ setup-init-android app:
 setup-init-ios app:
   cd {{app}} && cargo-tauri ios init
 
+setup-init-docker-sdk:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  cd {{ROOT_DIR}}/docker/
+  docker compose -f docker-compose.yaml up -d
+
 dev-desktop app:
   cd {{app}} && cargo-tauri dev
 
@@ -41,3 +47,6 @@ format-fe:
 
 lint-fe:
   cd $ROOT_DIR/www && yarn lint
+
+cargo-udeps:
+  cargo +nightly udeps --workspace --all-targets
