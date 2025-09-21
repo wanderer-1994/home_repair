@@ -1,0 +1,19 @@
+[package]
+name = "core_service_graphql_mutation"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+async-graphql.workspace = true
+tracing.workspace = true
+scoped-futures.workspace = true
+
+# Internal dependencies
+entity_type.workspace = true
+actor_auth.workspace = true
+error.workspace = true
+db_utils.workspace = true
+account_service_server.workspace = true
+core_service_graphql_context.workspace = true
+core_service_graphql_types.workspace = true

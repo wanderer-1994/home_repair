@@ -2,6 +2,7 @@ use actor_auth::{ActorType, Session};
 use chrono::{Duration, Utc};
 use db_utils::PgConnectionPool;
 use error::Result;
+use hex_converter::HexConverter;
 use jwt_signer::{JwtClaims, JwtSigner};
 use random_util::Random;
 use std::sync::Arc;
@@ -11,9 +12,9 @@ use crate::{InitiateOrRenewSession, SessionAndCsrfToken};
 const SESSION_TOKEN_TTL_DAYS: u8 = 2;
 
 pub struct AccountServiceContext {
-    pub(crate) db_connection_pool: PgConnectionPool,
-    pub(crate) jwt_signer: Arc<JwtSigner>,
-    pub(crate) random: Random,
+    pub db_connection_pool: PgConnectionPool,
+    pub jwt_signer: Arc<JwtSigner>,
+    pub random: Random,
 }
 
 impl AccountServiceContext {
@@ -38,7 +39,7 @@ impl AccountServiceContext {
         Ok(InitiateOrRenewSession {
             session_token: SessionAndCsrfToken {
                 session_token,
-                csrf_token: claims.jti.to_string(),
+                csrf_token: HexConverter::u128_to_hex(claims.jti),
             },
             session: Session {
                 iat: claims.iat,

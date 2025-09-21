@@ -4,6 +4,7 @@ use actor_auth::{ActorAuth, ActorType, CustomerActor, HandymanActor, Session};
 use db_utils::{with_mutable_db, with_readonly_db};
 use entity_type::{CustomerId, HandymanId};
 use error::{Error, Result};
+use hex_converter::HexConverter;
 use jwt_signer::JwtClaims;
 use scoped_futures::ScopedFutureExt;
 
@@ -338,9 +339,7 @@ pub struct ValidateSessionTokenResponse {
 
 /// Validate if csrf & access token is a valid pair
 fn verify_csrf_and_access_token_pairing<T>(claims: &JwtClaims<T>, csrf: &str) -> Result<()> {
-    let jti = csrf
-        .parse::<u128>()
-        .map_err(|_| Error::unauthenticated("Malformed csrf token"))?;
+    let jti = HexConverter::u128_from_hex(csrf)?;
     if claims.jti != jti {
         return Err(Error::unauthenticated("Invalid access token"));
     }
