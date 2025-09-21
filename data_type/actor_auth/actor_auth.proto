@@ -1,0 +1,35 @@
+syntax = "proto3";
+package actor_auth;
+
+import "google/protobuf/empty.proto";
+
+message CustomerActor {
+  int64 customer_id = 1;
+}
+
+message HandymanActor {
+  int64 handyman_id = 1;
+}
+
+message ActorType {
+  oneof inner {
+    CustomerActor customer = 1;
+    HandymanActor handyman = 2;
+  }
+}
+
+message Session {
+  int64 iat = 1;
+  int64 exp = 2;
+  ActorType actor_type = 3;
+}
+
+// Actor auth used in GRPC requests
+message ActorAuth {
+  oneof inner {
+    // Perform the request with God privilege
+    google.protobuf.Empty god = 1;
+    // Perform the request with account session privilege
+    Session session = 2;
+  }
+}

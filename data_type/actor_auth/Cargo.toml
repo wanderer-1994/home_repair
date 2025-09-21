@@ -1,0 +1,21 @@
+[package]
+name = "actor_auth"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[features]
+serde = ["dep:serde"]
+
+[dependencies]
+tonic.workspace = true
+prost.workspace = true
+serde = { workspace = true, optional = true }
+chrono.workspace = true
+
+# Internal deps
+error.workspace = true
+entity_type.workspace = true
+
+[build-dependencies]
+tonic-prost-build.workspace = true

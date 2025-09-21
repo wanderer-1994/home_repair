@@ -21,10 +21,8 @@ impl JwtSigner {
         let encoding_key = EncodingKey::from_secret(secret_str.as_bytes());
         let decoding_key = DecodingKey::from_secret(secret_str.as_bytes());
         let mut default_validation = Validation::default();
-        // Set exp as required claim, but disable expiration validation, we will handle expiration
-        // in our own logic
         default_validation.set_required_spec_claims(&["exp"]);
-        default_validation.validate_exp = false;
+        default_validation.validate_exp = true;
 
         Self {
             encoding_key,

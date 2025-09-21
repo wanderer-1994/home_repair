@@ -5,13 +5,17 @@ diesel::table! {
         id -> Int8,
         phone_number -> Text,
         password_hash -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
 diesel::table! {
-    customer_profile (customer_account_id) {
-        customer_account_id -> Int8,
-        mick_name -> Text,
+    customer_profile (customer_id) {
+        customer_id -> Int8,
+        nick_name -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
@@ -20,6 +24,8 @@ diesel::table! {
         id -> Int8,
         phone_number -> Text,
         password_hash -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
@@ -28,10 +34,12 @@ diesel::table! {
         handyman_id -> Int8,
         first_name -> Text,
         last_name -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
-diesel::joinable!(customer_profile -> customer_account (customer_account_id));
+diesel::joinable!(customer_profile -> customer_account (customer_id));
 diesel::joinable!(handyman_profile -> handyman_account (handyman_id));
 
 diesel::allow_tables_to_appear_in_same_query!(

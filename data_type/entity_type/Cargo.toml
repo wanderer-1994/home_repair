@@ -1,0 +1,27 @@
+[package]
+name = "entity_type"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[features]
+db = [
+    "diesel",
+    "diesel-derive-newtype",
+    "diesel-derive-enum",
+]
+graphql = ["async-graphql"]
+serde = []
+
+[dependencies]
+diesel = { workspace = true, features = ["postgres"], optional = true }
+diesel-derive-newtype = { workspace = true, optional = true }
+diesel-derive-enum = { workspace = true, optional = true, features = ["postgres"] }
+async-graphql = { workspace = true, optional = true }
+serde.workspace = true
+tonic.workspace = true
+prost.workspace = true
+
+[build-dependencies]
+tonic-prost-build.workspace = true
+proto_builder.workspace = true

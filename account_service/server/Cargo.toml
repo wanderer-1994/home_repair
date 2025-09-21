@@ -1,0 +1,19 @@
+[package]
+name = "account_service_server"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+tracing.workspace = true
+scoped-futures.workspace = true
+chrono.workspace = true
+
+# Internal dependencies
+entity_type.workspace = true
+actor_auth = { workspace = true, features = ["serde"] }
+db_utils.workspace = true
+error.workspace = true
+random_util.workspace = true
+jwt_signer.workspace = true
+account_service_db.workspace = true

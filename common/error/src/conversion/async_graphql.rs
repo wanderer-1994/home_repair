@@ -214,6 +214,6 @@ impl From<RetryInfo> for Value {
 
 impl From<GraphqlError> for Error {
     fn from(err: GraphqlError) -> Self {
-        Error::internal(format!("Internal GraphQL error {:?}", err))
+        Error::internal(format!("Internal GraphQL error {err:?}"))
     }
 }

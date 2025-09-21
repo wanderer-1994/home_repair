@@ -8,15 +8,15 @@ use std::io::{Error as IoError, ErrorKind};
 impl From<IoError> for Error {
     fn from(error: IoError) -> Self {
         match error.kind() {
-            ErrorKind::NotFound => Error::not_found(format!("Resource not found {}", error)),
+            ErrorKind::NotFound => Error::not_found(format!("Resource not found {error}")),
             ErrorKind::PermissionDenied => {
-                Error::permission_denied(format!("Permission denied {}", error))
+                Error::permission_denied(format!("Permission denied {error}"))
             }
             ErrorKind::AlreadyExists => {
-                Error::already_exists(format!("Resource already exists {}", error))
+                Error::already_exists(format!("Resource already exists {error}"))
             }
             ErrorKind::InvalidInput | ErrorKind::InvalidData => {
-                Error::invalid_argument(format!("Invalid input {}", error))
+                Error::invalid_argument(format!("Invalid input {error}"))
             }
             ErrorKind::ConnectionRefused
             | ErrorKind::ConnectionReset
@@ -32,8 +32,8 @@ impl From<IoError> for Error {
             | ErrorKind::Unsupported
             | ErrorKind::UnexpectedEof
             | ErrorKind::OutOfMemory
-            | ErrorKind::Other => Error::internal(format!("Internal io error {}", error)),
-            _ => Error::internal(format!("Internal unknown error {}", error)),
+            | ErrorKind::Other => Error::internal(format!("Internal io error {error}")),
+            _ => Error::internal(format!("Internal unknown error {error}")),
         }
     }
 }

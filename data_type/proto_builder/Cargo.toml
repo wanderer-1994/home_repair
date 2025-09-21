@@ -1,0 +1,8 @@
+[package]
+name = "proto_builder"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+tonic-prost-build.workspace = true
