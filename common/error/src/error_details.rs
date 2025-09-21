@@ -14,7 +14,7 @@ impl DebugInfo {
             stack_entries: backtrace
                 .frames()
                 .iter()
-                .map(|f| format!("{:?}", f))
+                .map(|f| format!("{f:?}"))
                 .collect(),
             detail: String::from(""),
         }

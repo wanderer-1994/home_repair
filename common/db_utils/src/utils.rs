@@ -47,8 +47,7 @@ pub fn check_one_row_affected(count: usize) -> Result<()> {
         0 => Err(Error::not_found("Entity not found")),
         1 => Ok(()),
         _ => Err(Error::internal(format!(
-            "'{}' rows affected but expected 1",
-            count
+            "'{count}' rows affected but expected 1",
         ))),
     }
 }
