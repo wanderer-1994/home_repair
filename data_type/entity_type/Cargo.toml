@@ -18,7 +18,7 @@ diesel = { workspace = true, features = ["postgres"], optional = true }
 diesel-derive-newtype = { workspace = true, optional = true }
 diesel-derive-enum = { workspace = true, optional = true, features = ["postgres"] }
 async-graphql = { workspace = true, optional = true }
-serde.workspace = true
+serde = { workspace = true, features = ["derive"] }
 tonic.workspace = true
 prost.workspace = true
 

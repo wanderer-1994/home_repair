@@ -1,0 +1,16 @@
+[package]
+name = "core_service_graphql_loader"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+async-graphql = { workspace = true, features = ["dataloader"] }
+tokio.workspace = true
+
+# Internal dependencies
+error = { workspace = true, features = ["cloneable"] }
+db_utils.workspace = true
+entity_type.workspace = true
+actor_auth.workspace = true
+account_service_db.workspace = true

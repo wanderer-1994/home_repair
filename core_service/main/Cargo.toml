@@ -1,0 +1,29 @@
+[package]
+name = "core_service_main"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+clap = { workspace = true, features = ["derive"] }
+serde.workspace = true
+serde_dhall.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread"] }
+tracing.workspace = true
+
+# Internal dependencies
+db_utils.workspace = true
+random_util.workspace = true
+jwt_signer.workspace = true
+share_service_schema.workspace = true
+account_service_server.workspace = true
+core_service_graphql_context.workspace = true
+core_service_server.workspace = true
+
+[[bin]]
+name = "core_service_main"
+path = "src/main.rs"
+
+[[bin]]
+name = "gen_schema"
+path = "src/gen_schema.rs"

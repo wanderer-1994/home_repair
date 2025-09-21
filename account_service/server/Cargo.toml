@@ -10,6 +10,7 @@ scoped-futures.workspace = true
 chrono.workspace = true
 
 # Internal dependencies
+hex_converter.workspace = true
 entity_type.workspace = true
 actor_auth = { workspace = true, features = ["serde"] }
 db_utils.workspace = true

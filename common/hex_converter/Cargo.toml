@@ -1,0 +1,9 @@
+[package]
+name = "hex_converter"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+paste.workspace = true
+error.workspace = true

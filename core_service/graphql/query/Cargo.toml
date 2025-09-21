@@ -1,0 +1,13 @@
+[package]
+name = "core_service_graphql_query"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+async-graphql.workspace = true
+
+# Internal dependencies
+error.workspace = true
+core_service_graphql_context.workspace = true
+core_service_graphql_types.workspace = true
