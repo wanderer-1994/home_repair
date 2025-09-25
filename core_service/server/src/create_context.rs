@@ -10,6 +10,8 @@ use core_service_graphql_context::{
 };
 use core_service_graphql_loader::CacheConfig;
 use db_utils::PgConnectionPool;
+use moka::future::Cache;
+use sms_sender::SmsSender;
 use std::{net::SocketAddr, sync::Arc};
 
 #[derive(Clone)]
@@ -19,8 +21,10 @@ pub struct AppState {
     pub features: Features,
     pub cookie_config: Arc<CookieConfig>,
     pub environment_config: Arc<EnvironmentConfig>,
-    pub cache_config: CacheConfig,
+    pub sms_sender: Arc<dyn SmsSender>,
+    pub loader_cache_config: CacheConfig,
     pub account_service_client: AccountService,
+    pub phone_pending_registration_cache: Arc<Cache<String, String>>,
 }
 
 /// Middleware that extracts user session, creates graphql schema and binds schema to axum request extensions.
@@ -41,7 +45,9 @@ pub async fn create_graphql_schema_extension(
         cookie_config: app_state.cookie_config,
         remote_addr,
         account_service_client: app_state.account_service_client,
-        cache_config: app_state.cache_config,
+        sms_sender: app_state.sms_sender,
+        phone_pending_registration_cache: app_state.phone_pending_registration_cache,
+        loader_cache_config: app_state.loader_cache_config,
     }));
 
     let user_context_span = make_user_context_span(&request_context).await;

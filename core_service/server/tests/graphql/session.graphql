@@ -1,0 +1,39 @@
+query Session {
+    session {
+        ...SessionFragment
+    }
+}
+
+mutation UserSignInWithPassword($input1: UserSignInWithPasswordInput!) {
+    userSignInWithPassword(input: $input1) {
+        session {
+            ...SessionFragment
+        }
+    }
+}
+
+fragment SessionFragment on Session {
+    id
+    iat
+    exp
+    actorType {
+        __typename
+        ...on Customer {
+            id
+            phoneNumber
+            profile {
+                id
+                nickName
+            }
+        }
+        ...on Handyman {
+            id
+            phoneNumber
+            profile {
+                id
+                firstName
+                lastName
+            }
+        }
+    }
+}

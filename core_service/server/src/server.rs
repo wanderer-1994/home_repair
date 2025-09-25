@@ -19,7 +19,9 @@ use core_service_graphql_context::{EnvironmentConfig, Features};
 use core_service_graphql_loader::CacheConfig;
 use db_utils::PgConnectionPool;
 use error::{Error, Result};
+use moka::future::Cache;
 use service_http::ACCESS_TOKEN_COOKIE_KEY;
+use sms_sender::SmsSender;
 use std::{net::SocketAddr, sync::Arc};
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
@@ -35,6 +37,8 @@ pub struct Server {
     pub features: Features,
     pub http_config: HttpConfig,
     pub account_service_client: AccountService,
+    pub sms_sender: Arc<dyn SmsSender>,
+    pub phone_pending_registration_cache: Arc<Cache<String, String>>,
 }
 
 impl Server {
@@ -89,14 +93,16 @@ impl Server {
         Ok(())
     }
 
-    fn create_app_state(&self, cache_config: CacheConfig) -> AppState {
+    fn create_app_state(&self, loader_cache_config: CacheConfig) -> AppState {
         AppState {
             db_pool: self.db_connection_pool.clone(),
             features: self.features,
             cookie_config: self.http_config.cookie_config.clone(),
             environment_config: Arc::clone(&self.environment_config),
-            cache_config,
+            sms_sender: self.sms_sender.clone(),
             account_service_client: self.account_service_client.clone(),
+            phone_pending_registration_cache: self.phone_pending_registration_cache.clone(),
+            loader_cache_config,
         }
     }
 

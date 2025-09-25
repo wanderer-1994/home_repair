@@ -1,15 +1,17 @@
 use account_service_server::{AccountService, AccountServiceContext};
 use clap::Parser;
 use core_service_graphql_context::{
-    CookieConfig as CookieConfigInner, EnvironmentConfig, Features,
+    CookieConfig as CookieConfigInner, EnvironmentConfig, Features, OTP_CODE_TTL_SECONDS,
 };
 use core_service_server::{
     Server,
     config_types::{HttpConfig, SameSiteConfig},
 };
 use jwt_signer::JwtSigner;
+use moka::future::CacheBuilder;
 use random_util::Random;
 use serde::Deserialize;
+use sms_sender::TerminalSmsSender;
 use std::{net::SocketAddr, sync::Arc};
 use tokio::{net::TcpListener, runtime::Builder};
 
@@ -46,6 +48,8 @@ struct CmdArgs {
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
+/// Dhall serde-able of [`CookieConfigInner`].
+/// Note that the [`CookieConfigInner`] contains `cookie::SameSite` which is not serde-able.
 struct CookieConfig {
     /// Is the server going through a secure transport? (e.g. HTTPS)
     use_https: bool,
@@ -122,6 +126,15 @@ async fn start_server() {
             jwt_signer: Arc::new(JwtSigner::new(&config.jwt_secret)),
             random: Random::default(),
         }),
+        // TODO (MVP): implement zalo SMS sender
+        sms_sender: Arc::new(TerminalSmsSender),
+        // TODO: replace with Redis cache. For MVP, temporary in-memory cache
+        // with max 10_000 entries per 15 mins of TTL should be sufficient.
+        phone_pending_registration_cache: Arc::new(
+            CacheBuilder::new(10_000)
+                .time_to_live(std::time::Duration::from_secs(OTP_CODE_TTL_SECONDS))
+                .build(),
+        ),
     }
     .serve(server_socket)
     .await

@@ -16,6 +16,7 @@ tower.workspace = true
 tower-http = { workspace = true, features = ["cors", "trace"] }
 async-graphql.workspace = true
 async-graphql-axum.workspace = true
+moka = { workspace = true, features = ["future"] }
 
 # Internal dependencies
 actor_auth.workspace = true
@@ -23,6 +24,7 @@ error.workspace = true
 db_utils.workspace = true
 entity_type.workspace = true
 service_http.workspace = true
+sms_sender.workspace = true
 account_service_server.workspace = true
 core_service_graphql_context.workspace = true
 core_service_graphql_loader.workspace = true
@@ -31,5 +33,9 @@ core_service_graphql_mutation.workspace = true
 core_service_graphql_types.workspace = true
 
 [dev-dependencies]
-reqwest = { workspace = true, features = ["json"] }
+sms_sender = { workspace = true, features = ["test"] }
+test_service_orchestration.workspace = true
 chrono.workspace = true
+reqwest = { workspace = true, features = ["json"] }
+graphql_client.workspace = true
+

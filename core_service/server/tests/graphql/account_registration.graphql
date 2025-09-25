@@ -1,0 +1,75 @@
+# N/B: apply sequential naming for input variables due to async-grapqhl unsolved bug.
+# See <https://github.com/async-graphql/async-graphql/issues/1014>.
+
+mutation UserAccountStartRegistration($input1: UserAccountStartRegistrationInput!) {
+    userAccountStartRegistration(input: $input1) {
+        case {
+            __typename
+            ...on StartRegistrationCaseAccountExist {
+                foo
+            }
+            ...on StartRegistrationCaseOtpCode {
+                digits
+                ttlSeconds
+                e164PhoneNumberStr
+            }
+        }
+    }
+}
+
+mutation UserAccountFinishRegistration($input2: UserAccountFinishRegistrationInput!) {
+    userAccountFinishRegistration(input: $input2) {
+        session {
+            ...SessionFragment
+        }
+    }
+}
+
+mutation CustomerCreateProfile($input3: CustomerCreateProfileInput!) {
+    customerCreateProfile(input: $input3) {
+        customer {
+            profile {
+                id
+                nickName
+            }
+        }
+    }
+}
+
+mutation HandymanCreateProfile($input4: HandymanCreateProfileInput!) {
+    handymanCreateProfile(input: $input4) {
+        handyman {
+            profile {
+                id
+                firstName
+                lastName
+            }
+        }
+    }
+}
+
+fragment SessionFragment on Session {
+    id
+    iat
+    exp
+    actorType {
+        __typename
+        ...on Customer {
+            id
+            phoneNumber
+            profile {
+                id
+                nickName
+            }
+        }
+        ...on Handyman {
+            id
+            phoneNumber
+            profile {
+                id
+                firstName
+                lastName
+            }
+        }
+    }
+}

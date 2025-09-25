@@ -35,7 +35,7 @@ impl Session {
     }
 
     async fn iat(&self) -> Result<NaiveDateTime> {
-        Ok(self.get()?.exp)
+        Ok(self.get()?.iat)
     }
 
     async fn exp(&self) -> Result<NaiveDateTime> {

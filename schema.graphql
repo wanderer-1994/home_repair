@@ -1,0 +1,169 @@
+"""
+Types of account
+"""
+enum AccountType {
+	"""
+	Person needs home repair service
+	"""
+	CUSTOMER
+	"""
+	Person provides home repair service
+	"""
+	HANDYMAN
+}
+
+union ActorType = Customer | Handyman
+
+type Customer implements Node {
+	id: ID!
+	phoneNumber: String!
+	profile: CustomerProfile
+}
+
+input CustomerCreateProfileInput {
+	"""
+	Requires customer_id to allow admin control.
+	Follow this convention for all other apis.
+	"""
+	customerId: ID!
+	nickName: String!
+}
+
+type CustomerCreateProfilePayload {
+	customer: Customer!
+}
+
+type CustomerProfile implements Node {
+	id: ID!
+	nickName: String!
+}
+
+type Handyman implements Node {
+	id: ID!
+	phoneNumber: String!
+	profile: HandymanProfile
+}
+
+input HandymanCreateProfileInput {
+	handymanId: ID!
+	firstName: String!
+	lastName: String!
+}
+
+type HandymanCreateProfilePayload {
+	handyman: Handyman!
+}
+
+type HandymanProfile implements Node {
+	id: ID!
+	firstName: String!
+	lastName: String!
+}
+
+type Mutation {
+	userAccountStartRegistration(input: UserAccountStartRegistrationInput!): UserAccountStartRegistrationPayload!
+	userAccountFinishRegistration(input: UserAccountFinishRegistrationInput!): UserAccountFinishRegistrationPayload!
+	userSignInWithPassword(input: UserSignInWithPasswordInput!): UserSignInWithPasswordPayload!
+	customerCreateProfile(input: CustomerCreateProfileInput!): CustomerCreateProfilePayload!
+	handymanCreateProfile(input: HandymanCreateProfileInput!): HandymanCreateProfilePayload!
+}
+
+"""
+ISO 8601 combined date and time without timezone.
+
+# Examples
+
+* `2015-07-01T08:59:60.123`,
+"""
+scalar NaiveDateTime
+
+"""
+Identifies a global object uniquely.
+See <https://graphql.org/learn/global-object-identification/>
+"""
+interface Node {
+	id: ID!
+}
+
+type Query {
+	node(id: ID!): Node
+	session: Session
+}
+
+type Session implements Node {
+	id: ID!
+	iat: NaiveDateTime!
+	exp: NaiveDateTime!
+	actorType: ActorType!
+}
+
+union StartRegistrationCase = StartRegistrationCaseAccountExist | StartRegistrationCaseOtpCode
+
+"""
+Indicates there already exists an account with same phone number,
+user should sign up or use a different phone number.
+"""
+type StartRegistrationCaseAccountExist {
+	"""
+	Dummy field, always `true`
+	"""
+	foo: Boolean!
+}
+
+"""
+Indicates an OTP code has been sent to user phone number (zalo) for verification.
+"""
+type StartRegistrationCaseOtpCode {
+	digits: Int!
+	ttlSeconds: Int!
+	"""
+	The standard phone number format captured by backend
+	"""
+	e164PhoneNumberStr: String!
+}
+
+input UserAccountFinishRegistrationInput {
+	phoneNumber: String!
+	password: String!
+	otpCode: String!
+	accountType: AccountType!
+}
+
+type UserAccountFinishRegistrationPayload {
+	session: Session!
+}
+
+input UserAccountStartRegistrationInput {
+	phoneNumber: String!
+	"""
+	Improves UX by pre-checking the existence of account type associated with the phone number.
+	"""
+	accountType: AccountType!
+}
+
+type UserAccountStartRegistrationPayload {
+	case: StartRegistrationCase!
+}
+
+input UserSignInWithPasswordInput {
+	phoneNumber: String!
+	password: String!
+	accountType: AccountType!
+}
+
+type UserSignInWithPasswordPayload {
+	session: Session!
+}
+
+"""
+Directs the executor to include this field or fragment only when the `if` argument is true.
+"""
+directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+"""
+Directs the executor to skip this field or fragment when the `if` argument is true.
+"""
+directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+schema {
+	query: Query
+	mutation: Mutation
+}

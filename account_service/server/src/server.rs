@@ -9,7 +9,7 @@ use std::sync::Arc;
 
 use crate::{InitiateOrRenewSession, SessionAndCsrfToken};
 
-const SESSION_TOKEN_TTL_DAYS: u8 = 2;
+pub const SESSION_TOKEN_TTL_DAYS: u8 = 2;
 
 #[derive(Clone)]
 pub struct AccountServiceContext {

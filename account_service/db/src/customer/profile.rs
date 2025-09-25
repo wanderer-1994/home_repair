@@ -23,7 +23,7 @@ impl CustomerProfile {
         new_profile.validate()?;
 
         diesel::insert_into(customer_profile::table)
-            .values(new_profile)
+            .values((new_profile, customer_profile::customer_id.eq(customer_id)))
             .returning(Self::as_select())
             .get_result::<Self>(conn)
             .await

@@ -8,6 +8,7 @@ use core_service_graphql_context::RequestContext;
 use core_service_graphql_types::{Customer, GlobalId, Handyman, Session};
 use entity_type::AccountType;
 use error::Result;
+use sms_sender::{MessageType, OtpVerificationForRegistration, SendSmsInput};
 use std::sync::Arc;
 
 #[derive(Default)]
@@ -25,7 +26,8 @@ impl SignUpAndAuthMutation {
             phone_number,
             account_type,
         } = input;
-        let e164_phone_number_str = typesafe::normalize_phone_number_str(&phone_number)?;
+        let phone_number = typesafe::phone_number_from_str(&phone_number)?;
+        let e164_phone_number_str = typesafe::phone_number_to_e164_format(&phone_number);
         let context = ctx.data::<RequestContext>()?;
 
         let exists = context
@@ -46,15 +48,26 @@ impl SignUpAndAuthMutation {
         }
 
         let otp_code = context
-            .pending_registration_phone_cache(e164_phone_number_str)
+            .pending_registration_phone_cache(e164_phone_number_str.clone())
             .await?;
-        // TODO: send code to zalo
-        let _code = otp_code.code;
+
+        context
+            .sms_sender
+            .send(SendSmsInput {
+                to: phone_number,
+                message: MessageType::OtpVerificationForRegistration(
+                    OtpVerificationForRegistration {
+                        code: otp_code.code,
+                    },
+                ),
+            })
+            .await?;
 
         Ok(UserAccountStartRegistrationPayload {
             case: StartRegistrationCase::OtpCode(StartRegistrationCaseOtpCode {
                 digits: otp_code.digits,
                 ttl_seconds: otp_code.ttl_seconds,
+                e164_phone_number_str,
             }),
         })
     }
@@ -227,6 +240,7 @@ impl SignUpAndAuthMutation {
 #[derive(Debug, InputObject)]
 struct UserAccountStartRegistrationInput {
     phone_number: String,
+    /// Improves UX by pre-checking the existence of account type associated with the phone number.
     account_type: AccountType,
 }
 
@@ -242,15 +256,20 @@ enum StartRegistrationCase {
 }
 
 #[derive(SimpleObject)]
+/// Indicates there already exists an account with same phone number,
+/// user should sign up or use a different phone number.
 struct StartRegistrationCaseAccountExist {
     /// Dummy field, always `true`
     foo: bool,
 }
 
 #[derive(SimpleObject)]
+/// Indicates an OTP code has been sent to user phone number (zalo) for verification.
 struct StartRegistrationCaseOtpCode {
     digits: u8,
     ttl_seconds: u64,
+    /// The standard phone number format captured by backend
+    e164_phone_number_str: String,
 }
 
 #[derive(Debug, InputObject)]
