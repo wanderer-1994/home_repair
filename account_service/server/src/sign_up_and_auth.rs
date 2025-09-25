@@ -2,14 +2,42 @@ use super::AccountService;
 use account_service_db as db;
 use actor_auth::{ActorAuth, ActorType, CustomerActor, HandymanActor, Session};
 use db_utils::{with_mutable_db, with_readonly_db};
-use entity_type::{CustomerId, HandymanId};
+use entity_type::{AccountType, CustomerId, HandymanId};
 use error::{Error, Result};
 use hex_converter::HexConverter;
 use jwt_signer::JwtClaims;
 use scoped_futures::ScopedFutureExt;
 
 impl AccountService {
-    #[tracing::instrument(skip_all, fields(email=request.e164_phone_number_str))]
+    #[tracing::instrument(skip_all, fields(phone_number=request.e164_phone_number_str))]
+    pub async fn account_exists(
+        &self,
+        request: AccountExistsRequest,
+    ) -> Result<AccountExistsResponse> {
+        let AccountExistsRequest {
+            e164_phone_number_str,
+            account_type,
+        } = request;
+        let e164_phone_number_str = typesafe::normalize_phone_number_str(&e164_phone_number_str)?;
+        let exists = with_mutable_db(&self.context.db_connection_pool, |conn| {
+            async {
+                match account_type {
+                    AccountType::Customer => {
+                        db::CustomerAccount::phone_exist(&e164_phone_number_str, conn).await
+                    }
+                    AccountType::Handyman => {
+                        db::CustomerAccount::phone_exist(&e164_phone_number_str, conn).await
+                    }
+                }
+            }
+            .scope_boxed()
+        })
+        .await?;
+
+        Ok(AccountExistsResponse { exists })
+    }
+
+    #[tracing::instrument(skip_all, fields(phone_number=request.e164_phone_number_str))]
     pub async fn customer_register(
         &self,
         request: CustomerRegisterRequest,
@@ -19,7 +47,7 @@ impl AccountService {
             password,
         } = request;
 
-        let phone_number = db::phone_number_from_str(&e164_phone_number_str)?;
+        let phone_number = typesafe::phone_number_from_str(&e164_phone_number_str)?;
         let account = with_mutable_db(&self.context.db_connection_pool, |conn| {
             db::CustomerAccount::create(
                 &ActorAuth::God,
@@ -42,7 +70,7 @@ impl AccountService {
         Ok(CustomerRegisterResponse { initiate_session })
     }
 
-    #[tracing::instrument(skip_all, fields(email=request.e164_phone_number_str))]
+    #[tracing::instrument(skip_all, fields(phone_number=request.e164_phone_number_str))]
     pub async fn handyman_register(
         &self,
         request: HandymanRegisterRequest,
@@ -52,7 +80,7 @@ impl AccountService {
             password,
         } = request;
 
-        let phone_number = db::phone_number_from_str(&e164_phone_number_str)?;
+        let phone_number = typesafe::phone_number_from_str(&e164_phone_number_str)?;
         let account = with_mutable_db(&self.context.db_connection_pool, |conn| {
             db::HandymanAccount::create(
                 &ActorAuth::God,
@@ -131,7 +159,7 @@ impl AccountService {
         Ok(HandymanCreateProfileResponse { profile })
     }
 
-    #[tracing::instrument(skip_all, fields(email=request.e164_phone_number_str))]
+    #[tracing::instrument(skip_all, fields(phone_number=request.e164_phone_number_str))]
     pub async fn customer_sign_in_with_password(
         &self,
         request: CustomerSignInWithPasswordRequest,
@@ -160,7 +188,7 @@ impl AccountService {
         Ok(CustomerSignInWithPasswordResponse { initiate_session })
     }
 
-    #[tracing::instrument(skip_all, fields(email=request.e164_phone_number_str))]
+    #[tracing::instrument(skip_all, fields(phone_number=request.e164_phone_number_str))]
     pub async fn handyman_sign_in_with_password(
         &self,
         request: HandymanSigninWithPasswordRequest,
@@ -214,6 +242,17 @@ impl AccountService {
             }),
         })
     }
+}
+
+#[derive(Debug)]
+pub struct AccountExistsRequest {
+    pub e164_phone_number_str: String,
+    pub account_type: AccountType,
+}
+
+#[derive(Debug)]
+pub struct AccountExistsResponse {
+    pub exists: bool,
 }
 
 #[derive(Debug)]

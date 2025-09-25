@@ -20,7 +20,7 @@ pub struct AppState {
     pub cookie_config: Arc<CookieConfig>,
     pub environment_config: Arc<EnvironmentConfig>,
     pub cache_config: CacheConfig,
-    pub account_service_client: Arc<AccountService>,
+    pub account_service_client: AccountService,
 }
 
 /// Middleware that extracts user session, creates graphql schema and binds schema to axum request extensions.

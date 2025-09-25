@@ -3,6 +3,7 @@ use error::{Error, Result};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
+#[derive(Clone)]
 pub struct SyncSessionContext(Arc<RwLock<Option<Arc<Session>>>>);
 
 impl SyncSessionContext {

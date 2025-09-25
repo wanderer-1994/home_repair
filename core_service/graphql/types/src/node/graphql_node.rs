@@ -7,10 +7,11 @@ use serde::{Deserialize, Serialize};
 /// For new node types, append a new variant to this enum.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize, Encode, Decode)]
 pub enum NodeKey {
-    FooNode = 1,
-    BarNode,
-    Account,
-    Session,
+    Session = 1,
+    Customer,
+    Handyman,
+    CustomerProfile,
+    HandymanProfile,
 }
 
 /// Identifies a global object uniquely.
@@ -18,8 +19,9 @@ pub enum NodeKey {
 #[derive(Interface)]
 #[graphql(field(name = "id", ty = "ID"))]
 pub enum Node {
-    FooNode(FooNode),
-    BarNode(BarNode),
-    Account(Account),
     Session(Session),
+    Customer(Customer),
+    Handyman(Handyman),
+    CustomerProfile(CustomerProfile),
+    HandymanProfile(HandymanProfile),
 }

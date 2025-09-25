@@ -34,9 +34,9 @@ impl CustomerAccount {
         conn: &mut AsyncPgConnection,
     ) -> Result<Self> {
         actor_auth.require_god_or_admin()?;
-        crate::check_password_safety(password)?;
+        typesafe::check_password_safety(password)?;
         let password_hash = Argon2Hash::hash_password(password)?;
-        let phone_number_str = crate::phone_number_to_e164_format(phone_number);
+        let phone_number_str = typesafe::phone_number_to_e164_format(phone_number);
 
         if Self::phone_exist(&phone_number_str, conn).await? {
             return Err(Error::already_exists("Phone number already exist"));
@@ -78,6 +78,21 @@ impl CustomerAccount {
             .await
             .optional()?;
         Ok(account)
+    }
+
+    /// Load many accounts by ids
+    pub async fn load_by_ids(
+        // TODO: define read permission for customer account
+        _actor_auth: &ActorAuth,
+        ids: &[CustomerId],
+        conn: &mut AsyncPgConnection,
+    ) -> Result<Vec<Self>> {
+        let result = customer_account::table
+            .filter(customer_account::id.eq_any(ids))
+            .select(Self::as_select())
+            .load::<Self>(conn)
+            .await?;
+        Ok(result)
     }
 }
 

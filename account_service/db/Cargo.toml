@@ -17,6 +17,7 @@ email_address.workspace = true
 phonenumber.workspace = true
 
 # Internal dependencies
+typesafe.workspace = true
 entity_type = { workspace = true, features = ["db"] }
 error.workspace = true
 db_utils.workspace = true

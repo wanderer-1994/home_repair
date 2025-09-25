@@ -117,11 +117,11 @@ async fn start_server() {
             cookie_config: Arc::new(CookieConfigInner::from(config.cookie_config)),
             cors_origins: config.cors_origins,
         },
-        account_service_client: Arc::new(AccountService::new(AccountServiceContext {
+        account_service_client: AccountService::new(AccountServiceContext {
             db_connection_pool,
             jwt_signer: Arc::new(JwtSigner::new(&config.jwt_secret)),
             random: Random::default(),
-        })),
+        }),
     }
     .serve(server_socket)
     .await

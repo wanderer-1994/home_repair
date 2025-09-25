@@ -1,0 +1,11 @@
+[package]
+name = "typesafe"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+phonenumber.workspace = true
+
+# Internal dependencies
+error.workspace = true

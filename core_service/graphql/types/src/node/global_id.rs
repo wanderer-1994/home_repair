@@ -71,29 +71,42 @@ impl AnyGlobalId {
     }
 }
 
-impl GlobalId for FooNode {
-    const KEY: NodeKey = NodeKey::FooNode;
-}
-
-impl GlobalId for BarNode {
-    const KEY: NodeKey = NodeKey::BarNode;
-}
-
-impl GlobalId for Account {
-    const KEY: NodeKey = NodeKey::Account;
-}
-
 impl GlobalId for Session {
     const KEY: NodeKey = NodeKey::Session;
+}
+
+impl GlobalId for Customer {
+    const KEY: NodeKey = NodeKey::Customer;
+}
+
+impl GlobalId for Handyman {
+    const KEY: NodeKey = NodeKey::Handyman;
+}
+
+impl GlobalId for CustomerProfile {
+    const KEY: NodeKey = NodeKey::CustomerProfile;
+}
+
+impl GlobalId for HandymanProfile {
+    const KEY: NodeKey = NodeKey::HandymanProfile;
 }
 
 pub fn parse_any_global_id(id: &ID) -> Result<Option<Node>> {
     let any_global_id = AnyGlobalId::from_global_id(id)?;
     let node = match any_global_id.key {
-        NodeKey::FooNode => Node::FooNode(FooNode::from_any_global_id_inner(&any_global_id.inner)?),
-        NodeKey::BarNode => Node::BarNode(BarNode::from_any_global_id_inner(&any_global_id.inner)?),
-        NodeKey::Account => Node::Account(Account::from_any_global_id_inner(&any_global_id.inner)?),
         NodeKey::Session => Node::Session(Session::from_any_global_id_inner(&any_global_id.inner)?),
+        NodeKey::Customer => {
+            Node::Customer(Customer::from_any_global_id_inner(&any_global_id.inner)?)
+        }
+        NodeKey::Handyman => {
+            Node::Handyman(Handyman::from_any_global_id_inner(&any_global_id.inner)?)
+        }
+        NodeKey::CustomerProfile => Node::CustomerProfile(
+            CustomerProfile::from_any_global_id_inner(&any_global_id.inner)?,
+        ),
+        NodeKey::HandymanProfile => Node::HandymanProfile(
+            HandymanProfile::from_any_global_id_inner(&any_global_id.inner)?,
+        ),
         #[allow(unreachable_patterns)]
         _ => return Ok(None),
     };

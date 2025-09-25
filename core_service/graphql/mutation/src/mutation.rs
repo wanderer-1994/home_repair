@@ -1,5 +1,5 @@
-use crate::FooMutation;
+use crate::SignUpAndAuthMutation;
 use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
-pub struct Mutation(FooMutation);
+pub struct Mutation(SignUpAndAuthMutation);

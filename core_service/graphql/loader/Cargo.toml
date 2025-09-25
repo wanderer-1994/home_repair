@@ -14,3 +14,4 @@ db_utils.workspace = true
 entity_type.workspace = true
 actor_auth.workspace = true
 account_service_db.workspace = true
+account_service_server.workspace = true

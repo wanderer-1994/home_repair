@@ -30,6 +30,21 @@ impl HandymanProfile {
             .await
             .map_err(Error::from)
     }
+
+    /// Load many profiles by ids
+    pub async fn load_by_ids(
+        // TODO: define read permission for handyman profile
+        _actor_auth: &ActorAuth,
+        ids: &[HandymanId],
+        conn: &mut AsyncPgConnection,
+    ) -> Result<Vec<Self>> {
+        let result = handyman_profile::table
+            .filter(handyman_profile::handyman_id.eq_any(ids))
+            .select(Self::as_select())
+            .load::<Self>(conn)
+            .await?;
+        Ok(result)
+    }
 }
 
 #[derive(Debug, Clone, Copy, Insertable)]
@@ -41,7 +56,7 @@ pub struct NewHandymanProfile<'a> {
 
 impl<'a> NewHandymanProfile<'a> {
     fn validate(&self) -> Result<()> {
-        crate::require_trimmed_and_not_empty_str(self.first_name, "first_name")?;
-        crate::require_trimmed_and_not_empty_str(self.last_name, "last_name")
+        typesafe::require_trimmed_and_not_empty_str(self.first_name, "first_name")?;
+        typesafe::require_trimmed_and_not_empty_str(self.last_name, "last_name")
     }
 }

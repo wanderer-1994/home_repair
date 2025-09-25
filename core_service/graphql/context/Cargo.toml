@@ -10,8 +10,10 @@ serde.workspace = true
 cookie.workspace = true
 async-graphql.workspace = true
 http.workspace = true
+moka = { workspace = true, features = ["future"] }
 
 # Internal dependencies
+random_util.workspace = true
 entity_type.workspace = true
 actor_auth.workspace = true
 error.workspace = true

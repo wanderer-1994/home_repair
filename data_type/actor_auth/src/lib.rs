@@ -2,8 +2,12 @@ use chrono::{DateTime, NaiveDateTime};
 use entity_type::{CustomerId, HandymanId};
 use error::{
     Error, Result, assert_argument_is_some,
-    error_details::{BadRequest, bad_request::FieldViolation},
+    error_details::{
+        BadRequest, PreconditionFailure, bad_request::FieldViolation,
+        precondition_failure::Violation,
+    },
 };
+use serde::{Deserialize, Serialize};
 
 pub mod proto {
     tonic::include_proto!("actor_auth");
@@ -27,6 +31,47 @@ pub struct HandymanActor {
 pub enum ActorType {
     Customer(CustomerActor),
     Handyman(HandymanActor),
+}
+
+impl ActorType {
+    pub fn actor_key(&self) -> ActorKey {
+        match self {
+            ActorType::Customer(actor) => ActorKey::Customer(actor.customer_id),
+            ActorType::Handyman(actor) => ActorKey::Handyman(actor.handyman_id),
+        }
+    }
+
+    pub fn try_customer(&self) -> Result<&CustomerActor> {
+        match self {
+            ActorType::Customer(actor) => Ok(actor),
+            ActorType::Handyman(_) => Err(Error::failed_precondition_with(
+                "Unexpected handyman session",
+                Some(PreconditionFailure {
+                    violations: vec![Violation {
+                        r#type: "HANDYMAN".into(),
+                        subject: "session".into(),
+                        description: "".into(),
+                    }],
+                }),
+            )),
+        }
+    }
+
+    pub fn try_handyman(&self) -> Result<&HandymanActor> {
+        match self {
+            ActorType::Customer(_) => Err(Error::failed_precondition_with(
+                "Unexpected customer session",
+                Some(PreconditionFailure {
+                    violations: vec![Violation {
+                        r#type: "CUSTOMER".into(),
+                        subject: "session".into(),
+                        description: "".into(),
+                    }],
+                }),
+            )),
+            ActorType::Handyman(actor) => Ok(actor),
+        }
+    }
 }
 
 impl From<ActorType> for proto::ActorType {
@@ -72,11 +117,32 @@ impl TryFrom<proto::ActorType> for ActorType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+pub enum ActorKey {
+    Customer(CustomerId),
+    Handyman(HandymanId),
+}
+
+impl<'a> From<&'a ActorType> for ActorKey {
+    fn from(value: &'a ActorType) -> Self {
+        match value {
+            ActorType::Customer(actor) => ActorKey::Customer(actor.customer_id),
+            ActorType::Handyman(actor) => ActorKey::Handyman(actor.handyman_id),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
 pub struct Session {
     pub iat: NaiveDateTime,
     pub exp: NaiveDateTime,
     pub actor_type: ActorType,
+}
+
+impl Session {
+    pub fn as_actor_auth(&self) -> ActorAuth {
+        ActorAuth::Session(*self)
+    }
 }
 
 impl From<Session> for proto::Session {
@@ -151,11 +217,26 @@ impl TryFrom<proto::ActorAuth> for ActorAuth {
 }
 
 impl ActorAuth {
-    fn actor_type(&self) -> Option<&ActorType> {
+    fn session_actor(&self) -> Option<&ActorType> {
         match self {
             ActorAuth::God => None,
             ActorAuth::Session(session) => Some(&session.actor_type),
         }
+    }
+
+    fn try_session_actor(&self) -> Result<&ActorType> {
+        self.session_actor().ok_or_else(|| {
+            Error::failed_precondition_with(
+                "Expect a user session",
+                Some(PreconditionFailure {
+                    violations: vec![Violation {
+                        r#type: "EXPECT_SESSION_ACTOR".into(),
+                        subject: "actor".into(),
+                        description: "".into(),
+                    }],
+                }),
+            )
+        })
     }
 
     /// Check if the actor is the system.
@@ -169,22 +250,8 @@ impl ActorAuth {
         false
     }
 
-    pub fn try_customer(&self) -> Result<&CustomerActor> {
-        match self.actor_type() {
-            Some(ActorType::Customer(inner)) => Ok(inner),
-            _ => Err(Error::permission_denied("Unauthorized")),
-        }
-    }
-
-    pub fn try_handyman(&self) -> Result<&HandymanActor> {
-        match self.actor_type() {
-            Some(ActorType::Handyman(inner)) => Ok(inner),
-            _ => Err(Error::permission_denied("Unauthorized")),
-        }
-    }
-
     pub fn is_handyman(&self) -> bool {
-        matches!(self.actor_type(), Some(ActorType::Handyman(_)))
+        matches!(self.session_actor(), Some(ActorType::Handyman(_)))
     }
 
     pub fn require_god_or_admin(&self) -> Result<()> {
@@ -199,7 +266,7 @@ impl ActorAuth {
             return Ok(());
         }
 
-        let customer = self.try_customer()?;
+        let customer = self.try_session_actor()?.try_customer()?;
         if customer.customer_id != customer_id {
             return Err(Error::permission_denied("Unauthorized"));
         }
@@ -212,7 +279,7 @@ impl ActorAuth {
             return Ok(());
         }
 
-        let handyman = self.try_handyman()?;
+        let handyman = self.try_session_actor()?.try_handyman()?;
         if handyman.handyman_id != handyman_id {
             return Err(Error::permission_denied("Unauthorized"));
         }
