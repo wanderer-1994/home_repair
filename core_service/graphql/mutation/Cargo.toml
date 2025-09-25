@@ -8,8 +8,10 @@ rust-version.workspace = true
 async-graphql.workspace = true
 tracing.workspace = true
 scoped-futures.workspace = true
+phonenumber.workspace = true
 
 # Internal dependencies
+typesafe.workspace = true
 entity_type.workspace = true
 actor_auth.workspace = true
 error.workspace = true

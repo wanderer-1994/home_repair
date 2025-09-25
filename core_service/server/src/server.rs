@@ -34,7 +34,7 @@ pub struct Server {
     pub environment_config: Arc<EnvironmentConfig>,
     pub features: Features,
     pub http_config: HttpConfig,
-    pub account_service_client: Arc<AccountService>,
+    pub account_service_client: AccountService,
 }
 
 impl Server {
@@ -96,7 +96,7 @@ impl Server {
             cookie_config: self.http_config.cookie_config.clone(),
             environment_config: Arc::clone(&self.environment_config),
             cache_config,
-            account_service_client: Arc::clone(&self.account_service_client),
+            account_service_client: self.account_service_client.clone(),
         }
     }
 

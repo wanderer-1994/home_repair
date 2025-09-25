@@ -1,7 +1,5 @@
 //! Utility functions facilitate account safety check
 
-use std::str::FromStr;
-
 use error::{
     Error, Result,
     error_details::{
@@ -10,6 +8,7 @@ use error::{
     },
 };
 use phonenumber::PhoneNumber;
+use std::str::FromStr;
 
 pub fn check_password_safety(password: &str) -> Result<()> {
     static MIN_PASSWORD_LENGTH: usize = 8;
@@ -52,6 +51,13 @@ pub fn phone_number_from_str(phone_str: &str) -> Result<PhoneNumber> {
             }),
         )
     })
+}
+
+/// Convert a phone number string to e164 standard format
+pub fn normalize_phone_number_str(phone_str: &str) -> Result<String> {
+    Ok(phone_number_to_e164_format(&phone_number_from_str(
+        phone_str,
+    )?))
 }
 
 /// Check if string is trimmed and not empty

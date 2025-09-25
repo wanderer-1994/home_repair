@@ -11,6 +11,7 @@ use crate::{InitiateOrRenewSession, SessionAndCsrfToken};
 
 const SESSION_TOKEN_TTL_DAYS: u8 = 2;
 
+#[derive(Clone)]
 pub struct AccountServiceContext {
     pub db_connection_pool: PgConnectionPool,
     pub jwt_signer: Arc<JwtSigner>,
@@ -50,6 +51,7 @@ impl AccountServiceContext {
     }
 }
 
+#[derive(Clone)]
 pub struct AccountService {
     pub(crate) context: AccountServiceContext,
 }

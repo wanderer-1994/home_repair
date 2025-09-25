@@ -29,6 +29,21 @@ impl CustomerProfile {
             .await
             .map_err(Error::from)
     }
+
+    /// Load many profiles by ids
+    pub async fn load_by_ids(
+        // TODO: define read permission for customer profile
+        _actor_auth: &ActorAuth,
+        ids: &[CustomerId],
+        conn: &mut AsyncPgConnection,
+    ) -> Result<Vec<Self>> {
+        let result = customer_profile::table
+            .filter(customer_profile::customer_id.eq_any(ids))
+            .select(Self::as_select())
+            .load::<Self>(conn)
+            .await?;
+        Ok(result)
+    }
 }
 
 #[derive(Debug, Clone, Copy, Insertable)]
@@ -39,6 +54,6 @@ pub struct NewCustomerProfile<'a> {
 
 impl<'a> NewCustomerProfile<'a> {
     fn validate(&self) -> Result<()> {
-        crate::require_trimmed_and_not_empty_str(self.nick_name, "nick_name")
+        typesafe::require_trimmed_and_not_empty_str(self.nick_name, "nick_name")
     }
 }

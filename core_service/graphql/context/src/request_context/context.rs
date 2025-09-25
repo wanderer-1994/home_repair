@@ -1,11 +1,21 @@
 use crate::{CookieConfig, EnvironmentConfig, Features};
 use account_service_server::AccountService;
 use actor_auth::Session;
-use core_service_graphql_loader::{AccountLoaders, CacheConfig, SyncSessionContext};
+use core_service_graphql_loader::{
+    CacheConfig, CustomerLoaders, HandymanLoaders, SyncSessionContext,
+};
 use db_utils::PgConnectionPool;
-use error::{Error, Result};
+use error::{
+    Error, Result,
+    error_details::{BadRequest, bad_request::FieldViolation},
+};
+use moka::future::{Cache, CacheBuilder};
+use random_util::Random;
 use std::{net::SocketAddr, ops::Deref, sync::Arc};
 use tokio::sync::RwLock;
+
+/// OTP code for account registration having TTL is 15 mins
+const OTP_CODE_TTL_SECONDS: u64 = 60 * 15;
 
 pub struct ContextInternal {
     /// User session extracted from graphql request
@@ -19,8 +29,12 @@ pub struct ContextInternal {
     pub environment_config: Arc<EnvironmentConfig>,
     pub cookie_config: Arc<CookieConfig>,
     pub remote_addr: SocketAddr,
-    pub account_service_client: Arc<AccountService>,
-    pub account_loaders: AccountLoaders,
+    pub account_service_client: AccountService,
+    /// Cache [e164_phone_number_str - 6 digits verification code]
+    phone_pending_registration_cache: Cache<String, String>,
+    pub random: Random,
+    pub customer_loaders: CustomerLoaders,
+    pub handyman_loaders: HandymanLoaders,
 }
 
 pub struct NewContextParams {
@@ -30,7 +44,7 @@ pub struct NewContextParams {
     pub environment_config: Arc<EnvironmentConfig>,
     pub cookie_config: Arc<CookieConfig>,
     pub remote_addr: SocketAddr,
-    pub account_service_client: Arc<AccountService>,
+    pub account_service_client: AccountService,
     pub cache_config: CacheConfig,
 }
 
@@ -53,14 +67,25 @@ impl ContextInternal {
             environment_config,
             cookie_config,
             remote_addr,
-            account_service_client,
-            account_loaders: AccountLoaders::new(
-                db_connection_pool.clone(),
+            customer_loaders: CustomerLoaders::new(
+                account_service_client.clone(),
+                SyncSessionContext::new(session_context.clone()),
+                cache_config,
+            ),
+            handyman_loaders: HandymanLoaders::new(
+                account_service_client.clone(),
                 SyncSessionContext::new(session_context.clone()),
                 cache_config,
             ),
             session_context,
             db_connection_pool,
+            account_service_client,
+            // TODO: replace with Redis cache. For MVP, temporary in-memory cache
+            // with max 10_000 entries per 15 mins of TTL should be sufficient.
+            phone_pending_registration_cache: CacheBuilder::new(10_000)
+                .time_to_live(std::time::Duration::from_secs(OTP_CODE_TTL_SECONDS))
+                .build(),
+            random: Random::default(),
         }
     }
 }
@@ -90,4 +115,55 @@ impl RequestContext {
             .map(Arc::clone)
             .ok_or_else(|| Error::unauthenticated("User is not authenticated"))
     }
+
+    /// Generate OTP code, insert to cache and return the OTP code
+    pub async fn pending_registration_phone_cache(
+        &self,
+        e164_phone_number_str: String,
+    ) -> Result<OtpCode> {
+        static OTP_CODE_LENGTH: u8 = 6;
+
+        let code = self.random.gen_numeric_string(OTP_CODE_LENGTH).await?;
+        self.phone_pending_registration_cache
+            .insert(e164_phone_number_str, code.clone())
+            .await;
+
+        Ok(OtpCode {
+            code,
+            digits: OTP_CODE_LENGTH,
+            ttl_seconds: OTP_CODE_TTL_SECONDS,
+        })
+    }
+
+    /// Generate OTP code, insert to cache and return the OTP code
+    pub async fn pending_registration_phone_validate(
+        &self,
+        e164_phone_number_str: &str,
+        otp_code: &str,
+    ) -> Result<()> {
+        let code = self
+            .phone_pending_registration_cache
+            .get(e164_phone_number_str)
+            .await;
+
+        if Some(otp_code) == code.as_deref() {
+            return Ok(());
+        }
+
+        Err(Error::invalid_argument_with(
+            "OTP verification failed",
+            Some(BadRequest {
+                field_violations: vec![FieldViolation {
+                    field: "OTP_VERIFICATION".into(),
+                    description: "FAILED".into(),
+                }],
+            }),
+        ))
+    }
+}
+
+pub struct OtpCode {
+    pub code: String,
+    pub digits: u8,
+    pub ttl_seconds: u64,
 }

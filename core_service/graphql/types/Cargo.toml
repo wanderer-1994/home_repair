@@ -16,7 +16,10 @@ chrono.workspace = true
 # strum.workspace = true
 
 # Yearnings internal deps
+actor_auth.workspace = true
 db_utils.workspace = true
 error.workspace = true
 entity_type = { workspace = true, features = ["graphql"] }
+account_service_db.workspace = true
+account_service_server.workspace = true
 core_service_graphql_context.workspace = true
