@@ -14,6 +14,8 @@ members = [
   "core_service/graphql/*",
   "core_service/server",
   "core_service/main",
+  "test_utils",
+  "test_service_orchestration",
 ]
 
 [workspace.dependencies]
@@ -58,10 +60,16 @@ reqwest = "0.12.23"
 clap = "4.5.48"
 serde_dhall = "0.13.0"
 moka = "0.12.10"
+uuid = "1.18.1"
+async-trait = "0.1.89"
 
 # Build dependencies
 tauri-build = "2"
 tonic-prost-build = "0.14.2"
+
+# Test dependencies
+testcontainers-modules = "0.13.0"
+graphql_client = "0.14.0"
 
 # Internal dependencies
 argon2_hash = { path = "common/argon2_hash" }
@@ -74,14 +82,20 @@ paging = { path = "common/paging" }
 random_util = { path = "common/random_util" }
 service_http = { path = "common/service_http" }
 environment = { path = "common/environment" }
+sms_sender = { path = "common/sms_sender" }
+
 actor_auth = { path = "data_type/actor_auth" }
 entity_type = { path = "data_type/entity_type" }
 proto_builder = { path = "data_type/proto_builder" }
+
 customer_app = { path = "customer_app" }
 handyman_app = { path = "handyman_app" }
+
 share_service_schema = { path = "share_service_schema" }
+
 account_service_db = { path = "account_service/db" }
 account_service_server = { path = "account_service/server" }
+
 core_service_graphql_context = { path = "core_service/graphql/context" }
 core_service_graphql_loader = { path = "core_service/graphql/loader" }
 core_service_graphql_types = { path = "core_service/graphql/types" }
@@ -89,6 +103,9 @@ core_service_graphql_mutation = { path = "core_service/graphql/mutation" }
 core_service_graphql_query = { path = "core_service/graphql/query" }
 core_service_server = { path = "core_service/server" }
 core_service_main = { path = "core_service/main" }
+
+test_utils = { path = "test_utils" }
+test_service_orchestration = { path = "test_service_orchestration" }
 
 # Pin versions in workspace, propagate and unify to member packages
 [workspace.package]

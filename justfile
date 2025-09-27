@@ -50,3 +50,7 @@ lint-fe:
 
 cargo-udeps:
   cargo +nightly udeps --workspace --all-targets
+
+# Generate graphql schema api
+gen-graphql-schema:
+  cargo run --bin gen_schema

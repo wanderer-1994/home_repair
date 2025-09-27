@@ -1,0 +1,25 @@
+[package]
+name = "test_service_orchestration"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+tokio.workspace = true
+testcontainers-modules.workspace = true
+diesel.workspace = true
+diesel-async = { workspace = true, features = ["postgres"] }
+cookie.workspace = true
+moka = { workspace = true, features = ["future"] }
+
+# Internal dependencies
+jwt_signer.workspace = true
+random_util.workspace = true
+error.workspace = true
+test_utils.workspace = true
+db_utils.workspace = true
+sms_sender.workspace = true
+share_service_schema.workspace = true
+account_service_server.workspace = true
+core_service_graphql_context.workspace = true
+core_service_server.workspace = true

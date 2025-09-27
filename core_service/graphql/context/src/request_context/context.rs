@@ -9,13 +9,14 @@ use error::{
     Error, Result,
     error_details::{BadRequest, bad_request::FieldViolation},
 };
-use moka::future::{Cache, CacheBuilder};
+use moka::future::Cache;
 use random_util::Random;
+use sms_sender::SmsSender;
 use std::{net::SocketAddr, ops::Deref, sync::Arc};
 use tokio::sync::RwLock;
 
 /// OTP code for account registration having TTL is 15 mins
-const OTP_CODE_TTL_SECONDS: u64 = 60 * 15;
+pub const OTP_CODE_TTL_SECONDS: u64 = 60 * 15;
 
 pub struct ContextInternal {
     /// User session extracted from graphql request
@@ -30,8 +31,9 @@ pub struct ContextInternal {
     pub cookie_config: Arc<CookieConfig>,
     pub remote_addr: SocketAddr,
     pub account_service_client: AccountService,
+    pub sms_sender: Arc<dyn SmsSender>,
     /// Cache [e164_phone_number_str - 6 digits verification code]
-    phone_pending_registration_cache: Cache<String, String>,
+    phone_pending_registration_cache: Arc<Cache<String, String>>,
     pub random: Random,
     pub customer_loaders: CustomerLoaders,
     pub handyman_loaders: HandymanLoaders,
@@ -45,7 +47,9 @@ pub struct NewContextParams {
     pub cookie_config: Arc<CookieConfig>,
     pub remote_addr: SocketAddr,
     pub account_service_client: AccountService,
-    pub cache_config: CacheConfig,
+    pub sms_sender: Arc<dyn SmsSender>,
+    pub phone_pending_registration_cache: Arc<Cache<String, String>>,
+    pub loader_cache_config: CacheConfig,
 }
 
 impl ContextInternal {
@@ -58,7 +62,9 @@ impl ContextInternal {
             cookie_config,
             remote_addr,
             account_service_client,
-            cache_config,
+            sms_sender,
+            phone_pending_registration_cache,
+            loader_cache_config,
         }: NewContextParams,
     ) -> Self {
         let session_context = Arc::new(RwLock::new(session_context.map(Arc::new)));
@@ -70,21 +76,18 @@ impl ContextInternal {
             customer_loaders: CustomerLoaders::new(
                 account_service_client.clone(),
                 SyncSessionContext::new(session_context.clone()),
-                cache_config,
+                loader_cache_config,
             ),
             handyman_loaders: HandymanLoaders::new(
                 account_service_client.clone(),
                 SyncSessionContext::new(session_context.clone()),
-                cache_config,
+                loader_cache_config,
             ),
             session_context,
             db_connection_pool,
             account_service_client,
-            // TODO: replace with Redis cache. For MVP, temporary in-memory cache
-            // with max 10_000 entries per 15 mins of TTL should be sufficient.
-            phone_pending_registration_cache: CacheBuilder::new(10_000)
-                .time_to_live(std::time::Duration::from_secs(OTP_CODE_TTL_SECONDS))
-                .build(),
+            phone_pending_registration_cache: phone_pending_registration_cache.clone(),
+            sms_sender,
             random: Random::default(),
         }
     }
@@ -162,6 +165,7 @@ impl RequestContext {
     }
 }
 
+#[derive(Debug)]
 pub struct OtpCode {
     pub code: String,
     pub digits: u8,

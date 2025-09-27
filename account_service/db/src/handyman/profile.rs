@@ -24,7 +24,7 @@ impl HandymanProfile {
         new_profile.validate()?;
 
         diesel::insert_into(handyman_profile::table)
-            .values(new_profile)
+            .values((new_profile, handyman_profile::handyman_id.eq(handyman_id)))
             .returning(Self::as_select())
             .get_result::<Self>(conn)
             .await

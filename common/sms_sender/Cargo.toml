@@ -1,0 +1,17 @@
+[package]
+name = "sms_sender"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[features]
+test = []
+
+[dependencies]
+async-trait.workspace = true
+phonenumber.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
+# Internal dependencies
+error.workspace = true
