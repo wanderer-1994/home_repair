@@ -62,6 +62,7 @@ serde_dhall = "0.13.0"
 moka = "0.12.10"
 uuid = "1.18.1"
 async-trait = "0.1.89"
+tracing-subscriber = "0.3.20"
 
 # Build dependencies
 tauri-build = "2"
@@ -83,6 +84,7 @@ random_util = { path = "common/random_util" }
 service_http = { path = "common/service_http" }
 environment = { path = "common/environment" }
 sms_sender = { path = "common/sms_sender" }
+logging = { path = "common/logging" }
 
 actor_auth = { path = "data_type/actor_auth" }
 entity_type = { path = "data_type/entity_type" }
