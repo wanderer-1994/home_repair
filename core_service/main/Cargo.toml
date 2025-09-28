@@ -13,6 +13,7 @@ tracing.workspace = true
 moka = { workspace = true, features = ["future"] }
 
 # Internal dependencies
+logging.workspace = true
 db_utils.workspace = true
 random_util.workspace = true
 jwt_signer.workspace = true

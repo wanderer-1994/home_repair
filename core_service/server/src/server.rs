@@ -86,6 +86,7 @@ impl Server {
             .layer(middleware)
             .into_make_service_with_connect_info::<SocketAddr>();
 
+        tracing::info!("Server listening on {}", server_socket.local_addr()?.port());
         axum::serve(server_socket, app)
             .await
             .map_err(|e| Error::internal(format!("Failed to run axum server {e:?}")))?;
@@ -165,7 +166,7 @@ pub async fn graphql_subscriptions(
         .protocols(ALL_WEBSOCKET_PROTOCOLS)
         .max_frame_size(1024)
         .max_message_size(1024)
-        .max_write_buffer_size(100)
+        .max_write_buffer_size(2048)
         .on_upgrade(move |stream| GraphQLWebSocket::new(stream, schema.clone(), protocol).serve())
 }
 

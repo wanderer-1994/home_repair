@@ -94,6 +94,8 @@ async fn start_server() {
         .parse::<ServerConfig>()
         .expect("Failed to parse config");
 
+    logging::init_tracing_local();
+
     let db_params = db_utils::DbConnectionParams {
         user: &cmd_args.db_user,
         password: &cmd_args.db_password,
@@ -109,8 +111,6 @@ async fn start_server() {
         .await
         .expect("Failed to establish postgres connection");
     let server_socket = create_tcp_listener(cmd_args.port).await;
-
-    tracing::info!("Server listening on {}", cmd_args.port);
     let environment_config = Arc::new(config.environment_config);
 
     Server {
