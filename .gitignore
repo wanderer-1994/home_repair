@@ -28,6 +28,12 @@ dist-ssr
 # Rust build target
 /target/
 
-# Tauri generated schema files for capabilities auto-completion
+# Default Tauri ignore for generated schema files for capabilities auto-completion
 customer_app/gen/schemas
 handyman_app/gen/schemas
+
+# This project custom ignore Tauri mobile code
+# Discussion "Should I commit gen folder" <https://github.com/tauri-apps/tauri/discussions/8323>
+customer_app/gen
+handyman_app/gen
+
