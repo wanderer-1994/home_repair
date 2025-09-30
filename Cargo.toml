@@ -6,8 +6,6 @@ resolver = "2"
 members = [
   "common/*",
   "data_type/*",
-  "customer_app",
-  "handyman_app",
   "share_service_schema",
   "account_service/db",
   "account_service/server",
@@ -19,8 +17,6 @@ members = [
 ]
 
 [workspace.dependencies]
-tauri = "2"
-tauri-plugin-opener = "2"
 serde = "1.0.219"
 serde_json = "1.0.143"
 diesel = "2.2.12"
@@ -65,7 +61,6 @@ async-trait = "0.1.89"
 tracing-subscriber = "0.3.20"
 
 # Build dependencies
-tauri-build = "2"
 tonic-prost-build = "0.14.2"
 
 # Test dependencies
@@ -89,9 +84,6 @@ logging = { path = "common/logging" }
 actor_auth = { path = "data_type/actor_auth" }
 entity_type = { path = "data_type/entity_type" }
 proto_builder = { path = "data_type/proto_builder" }
-
-customer_app = { path = "customer_app" }
-handyman_app = { path = "handyman_app" }
 
 share_service_schema = { path = "share_service_schema" }
 

@@ -9,6 +9,5 @@ chrono.workspace = true
 serde.workspace = true
 
 # Internal dependencies
-random_util.workspace = true
 jwt_signer.workspace = true
 error.workspace = true
