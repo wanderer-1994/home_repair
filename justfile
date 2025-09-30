@@ -28,23 +28,11 @@ setup-init-docker-sdk:
   cd {{ROOT_DIR}}/docker/
   docker compose -f docker-compose.yaml up -d
 
-dev-desktop app:
-  cd {{app}} && cargo-tauri dev
+dev-customer-app:
+  cd $ROOT_DIR/www/packages/customer_app && yarn start
 
-dev-android app:
-  cd {{app}} && cargo-tauri android dev
-
-dev-ios app:
-  cd {{app}} && cargo-tauri ios dev
-
-build-desktop app:
-  cd {{app}} && cargo-tauri build
-
-dev-fe app:
-  cd $ROOT_DIR/www/packages/{{app}} && yarn dev
-
-build-fe app:
-  cd $ROOT_DIR/www/packages/{{app}} && yarn build
+dev-handyman-app:
+  cd $ROOT_DIR/www/packages/handyman_app && yarn start
 
 dev-be:
   $ROOT_DIR/.sh/start_backend_local_dev.sh
