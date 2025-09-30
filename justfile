@@ -46,6 +46,9 @@ dev-fe app:
 build-fe app:
   cd $ROOT_DIR/www/packages/{{app}} && yarn build
 
+dev-be:
+  $ROOT_DIR/.sh/start_backend_local_dev.sh
+
 format:
   cargo fmt && just format-fe
 
