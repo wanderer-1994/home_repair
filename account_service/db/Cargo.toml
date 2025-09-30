@@ -13,7 +13,6 @@ diesel-async = { workspace = true, features = [
 ] }
 diesel_migrations = { workspace = true, features = ["postgres"] }
 chrono.workspace = true
-email_address.workspace = true
 phonenumber.workspace = true
 
 # Internal dependencies
