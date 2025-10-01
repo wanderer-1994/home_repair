@@ -1,0 +1,8 @@
+{
+  "backend": {
+    "host": "api.prod.example.com/graphql",
+    "port": 6001,
+    "graphqlPath": "graphql",
+    "https": true
+  }
+}

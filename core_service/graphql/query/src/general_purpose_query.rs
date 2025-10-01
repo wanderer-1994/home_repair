@@ -26,4 +26,8 @@ impl GeneralPurposeQuery {
             loadable_node => Ok(loadable_node),
         }
     }
+
+    async fn test(&self) -> Result<Vec<String>> {
+        Ok(vec!["foo".into(), "bar".into()])
+    }
 }
