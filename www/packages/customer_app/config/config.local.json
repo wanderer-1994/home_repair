@@ -1,0 +1,7 @@
+{
+  "backend": {
+    "port": 6001,
+    "graphqlPath": "graphql",
+    "https": false
+  }
+}

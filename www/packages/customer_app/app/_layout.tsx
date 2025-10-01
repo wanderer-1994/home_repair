@@ -1,6 +1,16 @@
+import environment from "@/lib/relay_environment";
 import { Stack } from "expo-router";
-import "./global.css";
+import { Suspense } from "react";
+import { ActivityIndicator } from "react-native";
+import { RelayEnvironmentProvider } from "react-relay";
+import "../global.css";
 
 export default function RootLayout() {
-  return <Stack />;
+  return (
+    <RelayEnvironmentProvider environment={environment}>
+      <Suspense fallback={<ActivityIndicator />}>
+        <Stack />
+      </Suspense>
+    </RelayEnvironmentProvider>
+  );
 }

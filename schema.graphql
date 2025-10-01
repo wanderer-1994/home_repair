@@ -87,6 +87,7 @@ interface Node {
 
 type Query {
 	node(id: ID!): Node
+	test: [String!]!
 	session: Session
 }
 
