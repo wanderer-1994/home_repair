@@ -1,33 +1,19 @@
-import { appTestQuery } from "@/__generated__/appTestQuery.graphql";
-import Config from "@/config";
-import { Text, View } from "react-native";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import useSessionCheck from "@/hooks/useSessionCheck";
+import { useRouter } from "expo-router";
+import React from "react";
+import { ActivityIndicator } from "react-native";
 
 export default function Index() {
-  const data = useLazyLoadQuery<appTestQuery>(
-    graphql`
-      query appTestQuery {
-        test
-      }
-    `,
-    {},
-    {fetchPolicy: "network-only"}
-  );
+  const router = useRouter();
+  const check = useSessionCheck();
 
-  const names = data.test;
+  React.useEffect(() => {
+    if (check._status === "UNAUTHENTICATED") {
+      router.replace("/(auth)");
+    } else {
+      router.replace("/(tabs)");
+    }
+  }, [check._status, router]);
 
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text className="text-lg font-bold text-red-700">Edit app/index.tsx to edit this screen.</Text>
-      <Text className="text-lg font-bold text-red-700">{Config.backend.graphqlPath}</Text>
-      <Text className="text-lg font-bold text-red-700">{process.env.EXPO_PUBLIC_APP_ENV}</Text>
-      {names.map(name => <Text key={name}>{name}</Text>)}
-    </View>
-  );
+  return <ActivityIndicator />;
 }
