@@ -9,19 +9,6 @@ note:
 setup-install-js:
   yarn
 
-setup-init-android app:
-  # Ref <https://v2.tauri.app/start/prerequisites/#android>
-  # 1. Install Android Studio at <https://developer.android.com/studio>
-  # 2. Persist env variables JAVA_HOME, ANDROID_HOME, NDK_HOME in `~/.zshrc`` file
-  # 3. Add rustup targets: rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
-  # 4. Open Android Studio app and install additional, non-default tools
-  # Discussion "Should I commit gen folder" <https://github.com/tauri-apps/tauri/discussions/8323>
-  cd {{app}} && cargo-tauri android init
-
-setup-init-ios app:
-  # Ref <https://v2.tauri.app/start/prerequisites/#ios>
-  cd {{app}} && cargo-tauri ios init
-
 setup-init-docker-sdk:
   #!/usr/bin/env bash
   set -euo pipefail
