@@ -1,11 +1,11 @@
 import { useSessionCheckQuery } from "@/__generated__/useSessionCheckQuery.graphql";
-import { newClientError } from "@/lib/client_error";
+import { newClientError } from "@/lib/error_client";
 import { graphql, useLazyLoadQuery } from "react-relay";
 
 /**
  * Check if a session exist.
  */
-export default function useSessionCheck() {
+export function useSessionCheck() {
   const session = useLazyLoadQuery<useSessionCheckQuery>(
     graphql`
       query useSessionCheckQuery {
