@@ -1,4 +1,6 @@
-import useSessionCheck from "@/hooks/useSessionCheck";
+import { loginWithPasswordMutation } from "@/__generated__/loginWithPasswordMutation.graphql";
+import { useRedirectIfAuthenticated } from "@/hooks/useRedirectIfAuthenticated";
+import { handleGqlError } from "@/lib/error_gql";
 import { Link, useRouter } from "expo-router";
 import React from "react";
 import {
@@ -7,61 +9,90 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
 } from "react-native";
+import { graphql, useMutation } from "react-relay";
 
 export default function Login() {
   const router = useRouter();
-  const check = useSessionCheck();
+  useRedirectIfAuthenticated();
 
-  React.useCallback(() => {
-    if (check._status === "AUTHENTICATED") {
-      router.replace("/(tabs)/home");
-    }
-  }, [check._status, router]);
+  const [loginWithPassword, isInFlight] =
+    useMutation<loginWithPasswordMutation>(graphql`
+      mutation loginWithPasswordMutation($input: UserSignInWithPasswordInput!) {
+        userSignInWithPassword(input: $input) {
+          session {
+            id
+            actorType {
+              __typename
+              ... on Customer {
+                id
+                phoneNumber
+                profile {
+                  id
+                  nickName
+                }
+              }
+            }
+          }
+        }
+      }
+    `);
 
-  const [phoneNumer, setPhoneNumber] = React.useState("");
+  const [phoneNumber, setPhoneNumber] = React.useState("");
   const [password, setPassword] = React.useState("");
 
   const handleLogin = React.useCallback(() => {
-    console.log({ phoneNumer, password });
-  }, [password, phoneNumer]);
+    if (isInFlight) {
+      return;
+    }
+    loginWithPassword({
+      variables: {
+        input: {
+          accountType: "CUSTOMER",
+          password,
+          phoneNumber,
+        },
+      },
+      onCompleted: (data) => {
+        router.replace("/(tabs)/home");
+      },
+      onError: handleGqlError,
+    });
+  }, [isInFlight, loginWithPassword, password, phoneNumber, router]);
 
   return (
-    <View>
-      {/* KeyboardAvoidingView prevents the keyboard from hiding the input fields */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <Text>Welcome Back</Text>
+    // KeyboardAvoidingView prevents the keyboard from hiding the input fields
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <Text>Welcome Back</Text>
 
-        <TextInput
-          placeholder="Số điện thoại"
-          keyboardType="phone-pad"
-          value={phoneNumer}
-          onChangeText={setPhoneNumber}
-        />
-        <TextInput
-          placeholder="Mật khẩu"
-          secureTextEntry
-          autoCapitalize="none"
-          autoCorrect={false}
-          textContentType="password"
-          value={password}
-          onChangeText={setPassword}
-        />
+      <TextInput
+        placeholder="Số điện thoại"
+        keyboardType="phone-pad"
+        value={phoneNumber}
+        onChangeText={setPhoneNumber}
+      />
+      <TextInput
+        placeholder="Mật khẩu"
+        secureTextEntry
+        autoCapitalize="none"
+        autoCorrect={false}
+        textContentType="password"
+        value={password}
+        onChangeText={setPassword}
+      />
 
-        <TouchableOpacity onPress={handleLogin}>
-          <Text>LOG IN</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={handleLogin}>
+        <Text>LOG IN</Text>
+      </TouchableOpacity>
 
-        <Link href="/(auth)/signup">Tạo tài khoản</Link>
+      <Link href="/(auth)/signup">Tạo tài khoản</Link>
 
-        {/*
-         * TODO:
-         * 1. Login with OTP code
-         */}
-      </KeyboardAvoidingView>
-    </View>
+      {/*
+       * TODO:
+       * 1. Login with OTP code
+       */}
+    </KeyboardAvoidingView>
   );
 }
