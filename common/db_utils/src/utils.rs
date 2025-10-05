@@ -1,6 +1,6 @@
 use diesel_async::pooled_connection::{AsyncDieselConnectionManager, deadpool::Pool};
 use diesel_async::scoped_futures::ScopedBoxFuture;
-use error::{Error, Result};
+use error::{Error, Result, error_details::ResourceInfo};
 use percent_encoding::{NON_ALPHANUMERIC, utf8_percent_encode};
 
 pub use diesel_async::AsyncPgConnection;
@@ -41,15 +41,34 @@ impl DbConnectionParams<'_> {
     }
 }
 
-/// Check whether one db row was affected as expected
-pub fn check_one_row_affected(count: usize) -> Result<()> {
-    match count {
-        0 => Err(Error::not_found("Entity not found")),
-        1 => Ok(()),
-        _ => Err(Error::internal(format!(
-            "'{count}' rows affected but expected 1",
-        ))),
+/// **Validates that the number of rows affected by a database operation matches the expected count.**
+///
+/// This is typically used after an UPDATE or DELETE query where you expect a specific
+/// number of resources to be modified. If `actual` is less than `expected`, it implies
+/// that some of the targeted resources were not found (or were already deleted),
+/// resulting in a `NotFound` error.
+///
+/// # Arguments
+/// * `resource_name` - The name or identifier of the resource being updated.
+/// * `expected` - The number of rows the operation was intended to affect.
+/// * `actual` - The actual number of rows returned by the database operation.
+pub fn validate_rows_affected(
+    resource_name: impl Into<String>,
+    expected: usize,
+    actual: usize,
+) -> Result<()> {
+    if expected != actual {
+        return Err(Error::not_found_with(
+            "At least one of the specified resource not found",
+            Some(ResourceInfo {
+                resource_type: Default::default(),
+                resource_name: resource_name.into(),
+                owner: Default::default(),
+                description: Default::default(),
+            }),
+        ));
     }
+    Ok(())
 }
 
 /// Given an iterator of `(K, V)` that is sorted by `K`, transforms into a `Vec<(K, Vec<V>)>` with `V`'s

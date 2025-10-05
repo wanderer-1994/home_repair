@@ -12,6 +12,7 @@ pub enum NodeKey {
     Handyman,
     CustomerProfile,
     HandymanProfile,
+    HandymanExpertise,
 }
 
 /// Identifies a global object uniquely.
@@ -24,4 +25,5 @@ pub enum Node {
     Handyman(Handyman),
     CustomerProfile(CustomerProfile),
     HandymanProfile(HandymanProfile),
+    HandymanExpertise(HandymanExpertise),
 }

@@ -756,6 +756,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
+name = "core_service_db"
+version = "0.1.0"
+dependencies = [
+ "actor_auth",
+ "argon2_hash",
+ "chrono",
+ "db_utils",
+ "diesel",
+ "diesel-async",
+ "diesel_migrations",
+ "entity_type",
+ "error",
+ "phonenumber",
+ "share_service_schema",
+ "typesafe",
+]
+
+[[package]]
 name = "core_service_graphql_context"
 version = "0.1.0"
 dependencies = [
@@ -798,6 +816,7 @@ dependencies = [
  "account_service_server",
  "actor_auth",
  "async-graphql",
+ "core_service_db",
  "core_service_graphql_context",
  "core_service_graphql_types",
  "db_utils",
@@ -833,10 +852,12 @@ dependencies = [
  "base64 0.22.1",
  "bincode 2.0.1",
  "chrono",
+ "core_service_db",
  "core_service_graphql_context",
  "db_utils",
  "entity_type",
  "error",
+ "scoped-futures",
  "serde",
  "serde_json",
  "tokio",
@@ -3790,6 +3811,7 @@ dependencies = [
  "diesel",
  "diesel-async",
  "diesel_migrations",
+ "entity_type",
  "error",
 ]
 

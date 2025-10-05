@@ -7,6 +7,9 @@ mod macros;
 mod entity_ids;
 pub use entity_ids::*;
 
+mod access_guard_id;
+pub use access_guard_id::*;
+
 mod account;
 pub use account::*;
 

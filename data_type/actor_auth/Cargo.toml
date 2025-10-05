@@ -5,12 +5,12 @@ version.workspace = true
 rust-version.workspace = true
 
 [features]
-serde = ["dep:serde"]
+serde = []
 
 [dependencies]
 tonic.workspace = true
 prost.workspace = true
-serde = { workspace = true, optional = true }
+serde.workspace = true
 chrono.workspace = true
 
 # Internal deps

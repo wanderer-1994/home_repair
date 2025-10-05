@@ -10,6 +10,7 @@ members = [
   "account_service/db",
   "account_service/server",
   "core_service/graphql/*",
+  "core_service/db",
   "core_service/server",
   "core_service/main",
   "test_utils",
@@ -92,6 +93,7 @@ share_service_schema = { path = "share_service_schema" }
 account_service_db = { path = "account_service/db" }
 account_service_server = { path = "account_service/server" }
 
+core_service_db = { path = "core_service/db" }
 core_service_graphql_context = { path = "core_service/graphql/context" }
 core_service_graphql_loader = { path = "core_service/graphql/loader" }
 core_service_graphql_types = { path = "core_service/graphql/types" }

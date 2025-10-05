@@ -1,0 +1,26 @@
+[package]
+name = "core_service_db"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+diesel = { workspace = true, features = ["chrono"] }
+diesel-async = { workspace = true, features = [
+    "postgres",
+    "deadpool",
+    "async-connection-wrapper",
+] }
+diesel_migrations = { workspace = true, features = ["postgres"] }
+chrono.workspace = true
+phonenumber.workspace = true
+
+# Internal dependencies
+typesafe.workspace = true
+entity_type = { workspace = true, features = ["db"] }
+error.workspace = true
+db_utils.workspace = true
+argon2_hash.workspace = true
+actor_auth.workspace = true
+share_service_schema.workspace = true
+

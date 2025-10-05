@@ -17,6 +17,7 @@ CREATE TABLE customer_account (
   updated_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
 );
 ALTER SEQUENCE customer_account_id_seq OWNED BY customer_account.id;
+CREATE INDEX customer_account_phone_number_idx ON customer_account(phone_number);
 
 -- Spitted from customer_account table because
 -- during registration profile info does not exist.
@@ -44,6 +45,7 @@ CREATE TABLE handyman_account (
   updated_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
 );
 ALTER SEQUENCE handyman_account_id_seq OWNED BY handyman_account.id;
+CREATE INDEX handyman_account_phone_number_idx ON handyman_account(phone_number);
 
 CREATE TABLE handyman_profile (
   handyman_id BIGINT PRIMARY KEY REFERENCES handyman_account(id) ON DELETE CASCADE,
@@ -53,3 +55,5 @@ CREATE TABLE handyman_profile (
   created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
   updated_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
 );
+CREATE INDEX handyman_profile_first_name_idx ON handyman_profile(first_name);
+CREATE INDEX handyman_profile_last_name_idx ON handyman_profile(last_name);

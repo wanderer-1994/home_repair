@@ -91,6 +91,10 @@ impl GlobalId for HandymanProfile {
     const KEY: NodeKey = NodeKey::HandymanProfile;
 }
 
+impl GlobalId for HandymanExpertise {
+    const KEY: NodeKey = NodeKey::HandymanExpertise;
+}
+
 pub fn parse_any_global_id(id: &ID) -> Result<Option<Node>> {
     let any_global_id = AnyGlobalId::from_global_id(id)?;
     let node = match any_global_id.key {

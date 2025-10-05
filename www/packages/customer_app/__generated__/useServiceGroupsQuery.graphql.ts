@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<82d3389b5c26bc2c9c1631db3e8bbb19>>
+ * @generated SignedSource<<18304fed0d0545afdeea651583840b69>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,28 +10,12 @@
 
 import { ConcreteRequest } from 'relay-runtime';
 export type ServiceLayer1 = "AIR_CONDITIONER" | "OTHER" | "WASHING_MACHINE" | "%future added value";
+export type ServiceLayer2 = "AIR_CONDITIONER_CLEANING" | "AIR_CONDITIONER_FIXING" | "OTHER" | "WASHING_MACHINE_CLEANING" | "WASHING_MACHINE_FIXING" | "%future added value";
 export type useServiceGroupsQuery$variables = Record<PropertyKey, never>;
 export type useServiceGroupsQuery$data = {
   readonly serviceGroups: ReadonlyArray<{
     readonly children: ReadonlyArray<{
-      readonly __typename: "ServiceAirConditionerCleaning";
-      readonly foo: boolean;
-    } | {
-      readonly __typename: "ServiceAirConditionerFixing";
-      readonly foo: boolean;
-    } | {
-      readonly __typename: "ServiceOther";
-      readonly foo: boolean;
-    } | {
-      readonly __typename: "ServiceWashingMachineCleaning";
-      readonly foo: boolean;
-    } | {
-      readonly __typename: "ServiceWashingMachineFixing";
-      readonly foo: boolean;
-    } | {
-      // This will never be '%other', but we need some
-      // value in case none of the concrete values match.
-      readonly __typename: "%other";
+      readonly serviceType: ServiceLayer2;
     }>;
     readonly groupType: ServiceLayer1;
   }>;
@@ -43,15 +27,6 @@ export type useServiceGroupsQuery = {
 
 const node: ConcreteRequest = (function(){
 var v0 = [
-  {
-    "alias": null,
-    "args": null,
-    "kind": "ScalarField",
-    "name": "foo",
-    "storageKey": null
-  }
-],
-v1 = [
   {
     "alias": null,
     "args": null,
@@ -70,7 +45,7 @@ v1 = [
       {
         "alias": null,
         "args": null,
-        "concreteType": null,
+        "concreteType": "Service",
         "kind": "LinkedField",
         "name": "children",
         "plural": true,
@@ -79,38 +54,8 @@ v1 = [
             "alias": null,
             "args": null,
             "kind": "ScalarField",
-            "name": "__typename",
+            "name": "serviceType",
             "storageKey": null
-          },
-          {
-            "kind": "InlineFragment",
-            "selections": (v0/*: any*/),
-            "type": "ServiceAirConditionerFixing",
-            "abstractKey": null
-          },
-          {
-            "kind": "InlineFragment",
-            "selections": (v0/*: any*/),
-            "type": "ServiceAirConditionerCleaning",
-            "abstractKey": null
-          },
-          {
-            "kind": "InlineFragment",
-            "selections": (v0/*: any*/),
-            "type": "ServiceWashingMachineFixing",
-            "abstractKey": null
-          },
-          {
-            "kind": "InlineFragment",
-            "selections": (v0/*: any*/),
-            "type": "ServiceWashingMachineCleaning",
-            "abstractKey": null
-          },
-          {
-            "kind": "InlineFragment",
-            "selections": (v0/*: any*/),
-            "type": "ServiceOther",
-            "abstractKey": null
           }
         ],
         "storageKey": null
@@ -125,7 +70,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "useServiceGroupsQuery",
-    "selections": (v1/*: any*/),
+    "selections": (v0/*: any*/),
     "type": "Query",
     "abstractKey": null
   },
@@ -134,19 +79,19 @@ return {
     "argumentDefinitions": [],
     "kind": "Operation",
     "name": "useServiceGroupsQuery",
-    "selections": (v1/*: any*/)
+    "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "8bf892109da23d89ee8da0e2e7a33eb2",
+    "cacheID": "26449e16fc5626b0b6bcd5abc396d61f",
     "id": null,
     "metadata": {},
     "name": "useServiceGroupsQuery",
     "operationKind": "query",
-    "text": "query useServiceGroupsQuery {\n  serviceGroups {\n    groupType\n    children {\n      __typename\n      ... on ServiceAirConditionerFixing {\n        foo\n      }\n      ... on ServiceAirConditionerCleaning {\n        foo\n      }\n      ... on ServiceWashingMachineFixing {\n        foo\n      }\n      ... on ServiceWashingMachineCleaning {\n        foo\n      }\n      ... on ServiceOther {\n        foo\n      }\n    }\n  }\n}\n"
+    "text": "query useServiceGroupsQuery {\n  serviceGroups {\n    groupType\n    children {\n      serviceType\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f0f369b5e03d47bc590a808efd015b28";
+(node as any).hash = "f1fb8a68d5c6e583c72d0f163b6db28c";
 
 export default node;
