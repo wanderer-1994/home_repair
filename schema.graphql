@@ -89,6 +89,40 @@ type Query {
 	node(id: ID!): Node
 	test: [String!]!
 	session: Session
+	serviceGroups: [ServiceGroup!]!
+}
+
+union Service = ServiceAirConditionerFixing | ServiceAirConditionerCleaning | ServiceWashingMachineFixing | ServiceWashingMachineCleaning | ServiceOther
+
+type ServiceAirConditionerCleaning {
+	foo: Boolean!
+}
+
+type ServiceAirConditionerFixing {
+	foo: Boolean!
+}
+
+type ServiceGroup {
+	groupType: ServiceLayer1!
+	children: [Service!]!
+}
+
+enum ServiceLayer1 {
+	AIR_CONDITIONER
+	WASHING_MACHINE
+	OTHER
+}
+
+type ServiceOther {
+	foo: Boolean!
+}
+
+type ServiceWashingMachineCleaning {
+	foo: Boolean!
+}
+
+type ServiceWashingMachineFixing {
+	foo: Boolean!
 }
 
 type Session implements Node {
