@@ -4,6 +4,13 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
+/**
+ * TODO: Value-Added Features encouraging user interaction with the app
+ *  1. Smart Maintenance Calendar remind customer of cleaning AC, washing machine, replace water filter core
+ *  2. Chợ đồ cũ
+ *  4. Q&A Forum (Hỏi đáp cộng đồng): người dùng đặt câu hỏi. Người dùng khác hoặc thợ có thể trả lời.
+ *     Nếu câu trả lời của thợ được like thì thợ sẽ được tăng điểm cộng đồng.
+ */
 export default function Layout() {
   return (
     <Tabs initialRouteName="home">

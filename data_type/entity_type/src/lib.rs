@@ -9,3 +9,6 @@ pub use entity_ids::*;
 
 mod account;
 pub use account::*;
+
+mod service;
+pub use service::*;

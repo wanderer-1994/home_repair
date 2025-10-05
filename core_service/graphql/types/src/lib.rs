@@ -15,3 +15,6 @@ pub use handyman::*;
 
 mod handyman_profile;
 pub use handyman_profile::*;
+
+mod service;
+pub use service::*;

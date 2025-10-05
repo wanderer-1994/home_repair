@@ -6,8 +6,10 @@ rust-version.workspace = true
 
 [dependencies]
 async-graphql.workspace = true
+strum.workspace = true
 
 # Internal dependencies
 error.workspace = true
+entity_type.workspace = true
 core_service_graphql_context.workspace = true
 core_service_graphql_types.workspace = true
