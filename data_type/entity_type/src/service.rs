@@ -31,6 +31,7 @@ macro_rules! def_services {
             PgType = "text",
             DbValueStyle = "SCREAMING_SNAKE_CASE"
         )]
+        #[cfg_attr(feature = "graphql", derive(async_graphql::Enum))]
         pub enum ServiceLayer2 {
             $(
                 $( $l2_children ),*

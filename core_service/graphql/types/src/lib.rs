@@ -1,8 +1,14 @@
 mod node;
 pub use node::*;
 
+mod generic_type;
+pub use generic_type::*;
+
 mod session;
 pub use session::*;
+
+mod service;
+pub use service::*;
 
 mod customer;
 pub use customer::*;
@@ -16,5 +22,5 @@ pub use handyman::*;
 mod handyman_profile;
 pub use handyman_profile::*;
 
-mod service;
-pub use service::*;
+mod handyman_expertise;
+pub use handyman_expertise::*;

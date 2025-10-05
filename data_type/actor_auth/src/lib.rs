@@ -217,14 +217,14 @@ impl TryFrom<proto::ActorAuth> for ActorAuth {
 }
 
 impl ActorAuth {
-    fn session_actor(&self) -> Option<&ActorType> {
+    pub fn session_actor(&self) -> Option<&ActorType> {
         match self {
             ActorAuth::God => None,
             ActorAuth::Session(session) => Some(&session.actor_type),
         }
     }
 
-    fn try_session_actor(&self) -> Result<&ActorType> {
+    pub fn try_session_actor(&self) -> Result<&ActorType> {
         self.session_actor().ok_or_else(|| {
             Error::failed_precondition_with(
                 "Expect a user session",
@@ -250,12 +250,16 @@ impl ActorAuth {
         false
     }
 
+    pub fn is_god_or_admin(&self) -> bool {
+        self.is_god() || self.is_admin()
+    }
+
     pub fn is_handyman(&self) -> bool {
         matches!(self.session_actor(), Some(ActorType::Handyman(_)))
     }
 
     pub fn require_god_or_admin(&self) -> Result<()> {
-        if !self.is_god() && !self.is_admin() {
+        if !self.is_god_or_admin() {
             return Err(Error::permission_denied("Unauthorized"));
         }
         Ok(())

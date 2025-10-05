@@ -18,5 +18,6 @@ error.workspace = true
 db_utils.workspace = true
 sms_sender.workspace = true
 account_service_server.workspace = true
+core_service_db.workspace = true
 core_service_graphql_context.workspace = true
 core_service_graphql_types.workspace = true

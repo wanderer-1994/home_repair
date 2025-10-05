@@ -13,7 +13,7 @@ serde_json.workspace = true
 base64.workspace = true
 tracing.workspace = true
 chrono.workspace = true
-# strum.workspace = true
+scoped-futures.workspace = true
 
 # Yearnings internal deps
 actor_auth.workspace = true
@@ -22,4 +22,5 @@ error.workspace = true
 entity_type = { workspace = true, features = ["graphql"] }
 account_service_db.workspace = true
 account_service_server.workspace = true
+core_service_db.workspace = true
 core_service_graphql_context.workspace = true

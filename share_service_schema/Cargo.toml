@@ -16,3 +16,4 @@ diesel-async = { workspace = true, features = [
 # Internal dependencies
 error.workspace = true
 db_utils.workspace = true
+entity_type = { workspace = true, features = ["db"] }

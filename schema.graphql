@@ -54,10 +54,47 @@ type HandymanCreateProfilePayload {
 	handyman: Handyman!
 }
 
+type HandymanExpertise implements Node {
+	id: ID!
+	service: Service!
+	note: String
+	rateVnd: Int
+}
+
+type HandymanExpertiseGroup {
+	group: ServiceLayer1!
+	expertises: [HandymanExpertise!]!
+}
+
 type HandymanProfile implements Node {
 	id: ID!
 	firstName: String!
 	lastName: String!
+	expertises: [HandymanExpertiseGroup!]!
+}
+
+input HandymanProfileAddExpertisesInput {
+	handymanId: ID!
+	expertises: [NewHandymanExpertise!]!
+}
+
+type HandymanProfileAddExpertisesPayload {
+	profile: HandymanProfile!
+}
+
+input HandymanProfileUpdateExpertiseChangeset {
+	note: SetValueString
+	rateVnd: SetValueInt32
+}
+
+input HandymanProfileUpdateExpertiseInput {
+	handymanId: ID!
+	expertiseId: ID!
+	changeset: HandymanProfileUpdateExpertiseChangeset!
+}
+
+type HandymanProfileUpdateExpertisePayload {
+	expertise: HandymanExpertise!
 }
 
 type Mutation {
@@ -66,6 +103,8 @@ type Mutation {
 	userSignInWithPassword(input: UserSignInWithPasswordInput!): UserSignInWithPasswordPayload!
 	customerCreateProfile(input: CustomerCreateProfileInput!): CustomerCreateProfilePayload!
 	handymanCreateProfile(input: HandymanCreateProfileInput!): HandymanCreateProfilePayload!
+	handymanProfileAddExpertises(input: HandymanProfileAddExpertisesInput!): HandymanProfileAddExpertisesPayload!
+	handymanProfileUpdateExpertise(input: HandymanProfileUpdateExpertiseInput!): HandymanProfileUpdateExpertisePayload!
 }
 
 """
@@ -76,6 +115,12 @@ ISO 8601 combined date and time without timezone.
 * `2015-07-01T08:59:60.123`,
 """
 scalar NaiveDateTime
+
+input NewHandymanExpertise {
+	service: ServiceLayer2!
+	note: String
+	rateVnd: Int
+}
 
 """
 Identifies a global object uniquely.
@@ -92,14 +137,9 @@ type Query {
 	serviceGroups: [ServiceGroup!]!
 }
 
-union Service = ServiceAirConditionerFixing | ServiceAirConditionerCleaning | ServiceWashingMachineFixing | ServiceWashingMachineCleaning | ServiceOther
-
-type ServiceAirConditionerCleaning {
-	foo: Boolean!
-}
-
-type ServiceAirConditionerFixing {
-	foo: Boolean!
+type Service {
+	serviceType: ServiceLayer2!
+	serviceGroup: ServiceGroup!
 }
 
 type ServiceGroup {
@@ -113,16 +153,12 @@ enum ServiceLayer1 {
 	OTHER
 }
 
-type ServiceOther {
-	foo: Boolean!
-}
-
-type ServiceWashingMachineCleaning {
-	foo: Boolean!
-}
-
-type ServiceWashingMachineFixing {
-	foo: Boolean!
+enum ServiceLayer2 {
+	AIR_CONDITIONER_FIXING
+	AIR_CONDITIONER_CLEANING
+	WASHING_MACHINE_FIXING
+	WASHING_MACHINE_CLEANING
+	OTHER
 }
 
 type Session implements Node {
@@ -130,6 +166,28 @@ type Session implements Node {
 	iat: NaiveDateTime!
 	exp: NaiveDateTime!
 	actorType: ActorType!
+}
+
+"""
+A wrapper input object around an `Option<T>`.
+This is needed so that we can represent rust `Option<Option<T>>` in GraphQL,
+
+Allowing clients to explicitly set a value, clear a value (by setting to null),
+or leave the value unchanged (by omitting the field).
+"""
+input SetValueInt32 {
+	value: Int
+}
+
+"""
+A wrapper input object around an `Option<T>`.
+This is needed so that we can represent rust `Option<Option<T>>` in GraphQL,
+
+Allowing clients to explicitly set a value, clear a value (by setting to null),
+or leave the value unchanged (by omitting the field).
+"""
+input SetValueString {
+	value: String
 }
 
 union StartRegistrationCase = StartRegistrationCaseAccountExist | StartRegistrationCaseOtpCode

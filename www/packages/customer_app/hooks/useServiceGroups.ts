@@ -8,22 +8,7 @@ export function useServiceGroups() {
         serviceGroups {
           groupType
           children {
-            __typename
-            ... on ServiceAirConditionerFixing {
-              foo
-            }
-            ... on ServiceAirConditionerCleaning {
-              foo
-            }
-            ... on ServiceWashingMachineFixing {
-              foo
-            }
-            ... on ServiceWashingMachineCleaning {
-              foo
-            }
-            ... on ServiceOther {
-              foo
-            }
+            serviceType
           }
         }
       }
