@@ -1,2 +1,3 @@
 -- Initiate services database
-CREATE DATABASE home_repair_share_database;
+CREATE DATABASE account_service;
+CREATE DATABASE core_service;

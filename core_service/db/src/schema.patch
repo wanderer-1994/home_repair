@@ -1,5 +1,5 @@
-@@ -30,13 +30,13 @@
- }
+@@ -1,12 +1,12 @@
+ // @generated automatically by Diesel CLI.
  
  diesel::table! {
      handyman_expertise (id) {
@@ -12,4 +12,3 @@
          created_at -> Timestamp,
      }
  }
- 

@@ -37,3 +37,4 @@ handyman_app/gen/schemas
 customer_app/gen
 handyman_app/gen
 
+*.env

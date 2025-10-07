@@ -1,9 +1,9 @@
+use crate::schema::handyman_profile;
 use actor_auth::ActorAuth;
 use diesel::prelude::*;
 use diesel_async::{AsyncPgConnection, RunQueryDsl};
 use entity_type::HandymanId;
 use error::{Error, Result};
-use share_service_schema::handyman_profile;
 
 #[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = handyman_profile)]

@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+use crate::schema::handyman_expertise;
 use actor_auth::ActorAuth;
 use chrono::NaiveDateTime;
 use db_utils::AsyncPgConnection;
@@ -9,7 +10,6 @@ use entity_type::{
     HandymanAccessGuardId, HandymanExpertiseId, HandymanId, ServiceLayer1, ServiceLayer2,
 };
 use error::Result;
-use share_service_schema::handyman_expertise;
 
 #[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = handyman_expertise)]
