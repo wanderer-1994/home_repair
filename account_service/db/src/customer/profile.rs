@@ -1,9 +1,9 @@
+use crate::schema::customer_profile;
 use actor_auth::ActorAuth;
 use diesel::prelude::*;
 use diesel_async::{AsyncPgConnection, RunQueryDsl};
 use entity_type::CustomerId;
 use error::{Error, Result};
-use share_service_schema::customer_profile;
 
 #[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = customer_profile)]

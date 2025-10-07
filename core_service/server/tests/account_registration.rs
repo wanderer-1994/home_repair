@@ -10,6 +10,7 @@ async fn customer_registration() -> Result<()> {
     let ServiceEnvironment {
         _pg_container,
         core_service,
+        ..
     } = ServiceParams::default().init().await?;
     let client =
         graphql::GraphqlClient::new(format!("http://{}/graphql", core_service.service_host));
@@ -127,6 +128,7 @@ async fn handyman_registration() -> Result<()> {
     let ServiceEnvironment {
         _pg_container,
         core_service,
+        ..
     } = ServiceParams::default().init().await?;
     let client =
         graphql::GraphqlClient::new(format!("http://{}/graphql", core_service.service_host));

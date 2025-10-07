@@ -1,7 +1,7 @@
-use crate::service_database::SHARED_SERVICE_DATABASE;
+use crate::service_database::CORE_SERVICE_DATABASE;
 use account_service_server::AccountService;
-use account_service_server::AccountServiceContext;
 use cookie::SameSite;
+use core_service_db as db;
 use core_service_graphql_context::CookieConfig;
 use core_service_graphql_context::EnvironmentConfig;
 use core_service_graphql_context::Features;
@@ -10,10 +10,7 @@ use core_service_server::Server;
 use core_service_server::config_types::HttpConfig;
 use db_utils::PgConnectionPool;
 use error::{Error, Result};
-use jwt_signer::JwtSigner;
 use moka::future::CacheBuilder;
-use random_util::Random;
-use share_service_schema as db;
 use sms_sender::{TestSmsReceiver, TestSmsSender};
 use std::sync::Arc;
 use test_utils::PostgresContainer;
@@ -27,6 +24,7 @@ pub struct CoreServiceParams {
 
 pub(crate) struct CoreServiceParamsInner<'a> {
     pub postgres_container: &'a PostgresContainer,
+    pub account_service_client: AccountService,
     pub features: Features,
 }
 
@@ -41,13 +39,14 @@ impl CoreServiceParamsInner<'_> {
     pub async fn init(self) -> Result<CoreServiceEnvironment> {
         let CoreServiceParamsInner {
             postgres_container,
+            account_service_client,
             features,
         } = self;
 
         // No need to run core service migration here because auth service already handle it.
         // Running migration twice causing error.
         let (db_pool, db_url) = postgres_container
-            .db_connection(SHARED_SERVICE_DATABASE)
+            .db_connection(CORE_SERVICE_DATABASE)
             .await?;
         db::run_migrations(db_url).await?;
 
@@ -77,11 +76,7 @@ impl CoreServiceParamsInner<'_> {
                     }),
                     cors_origins: vec![TEST_ORIGIN.to_string()],
                 },
-                account_service_client: AccountService::new(AccountServiceContext {
-                    db_connection_pool: db_pool_cloned,
-                    jwt_signer: Arc::new(JwtSigner::new("my-super-secret")),
-                    random: Random::default(),
-                }),
+                account_service_client,
                 sms_sender: Arc::new(sms_sender),
                 phone_pending_registration_cache: Arc::new(
                     CacheBuilder::new(10_000)

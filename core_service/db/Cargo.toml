@@ -22,5 +22,4 @@ error.workspace = true
 db_utils.workspace = true
 argon2_hash.workspace = true
 actor_auth.workspace = true
-share_service_schema.workspace = true
 

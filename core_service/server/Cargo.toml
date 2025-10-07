@@ -34,7 +34,7 @@ core_service_graphql_types.workspace = true
 
 [dev-dependencies]
 sms_sender = { workspace = true, features = ["test"] }
-test_service_orchestration.workspace = true
+test_service_orchestration = { workspace = true, features = ["core_service"] }
 chrono.workspace = true
 reqwest = { workspace = true, features = ["json"] }
 graphql_client.workspace = true

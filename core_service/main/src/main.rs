@@ -1,5 +1,6 @@
-use account_service_server::{AccountService, AccountServiceContext};
+use account_service_main as acc_main;
 use clap::Parser;
+use core_service_db as db;
 use core_service_graphql_context::{
     CookieConfig as CookieConfigInner, EnvironmentConfig, Features, OTP_CODE_TTL_SECONDS,
 };
@@ -7,9 +8,7 @@ use core_service_server::{
     Server,
     config_types::{HttpConfig, SameSiteConfig},
 };
-use jwt_signer::JwtSigner;
 use moka::future::CacheBuilder;
-use random_util::Random;
 use serde::Deserialize;
 use sms_sender::TerminalSmsSender;
 use std::{net::SocketAddr, sync::Arc};
@@ -40,6 +39,26 @@ struct CmdArgs {
     /// Password for postgres db connection.
     #[clap(long)]
     db_password: String,
+
+    /// Endpoint (DNS name or IP address) of the postgres account service db connection
+    #[clap(long)]
+    acc_db_endpoint: String,
+
+    /// Port for the postgres account service db.
+    #[clap(long)]
+    acc_db_port: u16,
+
+    /// Name of the postgres account service db.
+    #[clap(long)]
+    acc_db_name: String,
+
+    /// Username for postgres account service db connection.
+    #[clap(long)]
+    acc_db_user: String,
+
+    /// Password for postgres account service db connection.
+    #[clap(long)]
+    acc_db_password: String,
 
     /// Dhall configuration file for [ServerConfig].
     #[clap(long)]
@@ -104,7 +123,7 @@ async fn start_server() {
         database_name: &cmd_args.db_name,
     };
     let db_url = db_params.url();
-    share_service_schema::run_migrations(db_url.clone())
+    db::run_migrations(db_url.clone())
         .await
         .expect("Cannot run migrations");
     let db_connection_pool = db_utils::new_async_connection_pool(&db_url)
@@ -112,6 +131,20 @@ async fn start_server() {
         .expect("Failed to establish postgres connection");
     let server_socket = create_tcp_listener(cmd_args.port).await;
     let environment_config = Arc::new(config.environment_config);
+    let account_service_client = acc_main::start_server(
+        acc_main::CmdArgs {
+            db_endpoint: cmd_args.acc_db_endpoint,
+            db_port: cmd_args.acc_db_port,
+            db_name: cmd_args.acc_db_name,
+            db_user: cmd_args.acc_db_user,
+            db_password: cmd_args.acc_db_password,
+        },
+        acc_main::ServerConfig {
+            jwt_secret: config.jwt_secret,
+        },
+    )
+    .await
+    .expect("Failed to create account service");
 
     Server {
         db_connection_pool: db_connection_pool.clone(),
@@ -121,11 +154,7 @@ async fn start_server() {
             cookie_config: Arc::new(CookieConfigInner::from(config.cookie_config)),
             cors_origins: config.cors_origins,
         },
-        account_service_client: AccountService::new(AccountServiceContext {
-            db_connection_pool,
-            jwt_signer: Arc::new(JwtSigner::new(&config.jwt_secret)),
-            random: Random::default(),
-        }),
+        account_service_client,
         // TODO (MVP): implement zalo SMS sender
         sms_sender: Arc::new(TerminalSmsSender),
         // TODO: replace with Redis cache. For MVP, temporary in-memory cache

@@ -1,0 +1,15 @@
+[package]
+name = "account_service_main"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+
+# Internal dependencies
+error.workspace = true
+db_utils.workspace = true
+random_util.workspace = true
+jwt_signer.workspace = true
+account_service_db.workspace = true
+account_service_server.workspace = true

@@ -1,3 +1,4 @@
+use crate::schema::handyman_account;
 use actor_auth::ActorAuth;
 use argon2_hash::Argon2Hash;
 use diesel::prelude::*;
@@ -5,7 +6,6 @@ use diesel_async::{AsyncPgConnection, RunQueryDsl};
 use entity_type::HandymanId;
 use error::{Error, Result};
 use phonenumber::PhoneNumber;
-use share_service_schema::handyman_account;
 
 #[derive(Debug, Queryable, Selectable, Identifiable)]
 #[diesel(table_name = handyman_account)]

@@ -30,17 +30,6 @@ diesel::table! {
 }
 
 diesel::table! {
-    handyman_expertise (id) {
-        id -> Int8,
-        handyman_id -> Int8,
-        service -> entity_type::ServiceLayer2Mapping,
-        note -> Nullable<Text>,
-        rate_vnd -> Nullable<Int4>,
-        created_at -> Timestamp,
-    }
-}
-
-diesel::table! {
     handyman_profile (handyman_id) {
         handyman_id -> Int8,
         first_name -> Text,
@@ -57,6 +46,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     customer_account,
     customer_profile,
     handyman_account,
-    handyman_expertise,
     handyman_profile,
 );

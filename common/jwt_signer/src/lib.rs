@@ -153,7 +153,7 @@ mod test {
             .verify_token::<JwtClaims<TestClaims>>(&token_str)
             .unwrap();
 
-        assert_eq!(token.claims.inner.dummy, true);
+        assert!(token.claims.inner.dummy);
         assert!(token.claims.exp < now);
     }
 }

@@ -15,11 +15,9 @@ moka = { workspace = true, features = ["future"] }
 # Internal dependencies
 logging.workspace = true
 db_utils.workspace = true
-random_util.workspace = true
-jwt_signer.workspace = true
 sms_sender.workspace = true
-share_service_schema.workspace = true
-account_service_server.workspace = true
+account_service_main.workspace = true
+core_service_db.workspace = true
 core_service_graphql_context.workspace = true
 core_service_server.workspace = true
 

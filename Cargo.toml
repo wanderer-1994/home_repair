@@ -6,9 +6,9 @@ resolver = "2"
 members = [
   "common/*",
   "data_type/*",
-  "share_service_schema",
   "account_service/db",
   "account_service/server",
+  "account_service/main",
   "core_service/graphql/*",
   "core_service/db",
   "core_service/server",
@@ -88,10 +88,9 @@ actor_auth = { path = "data_type/actor_auth" }
 entity_type = { path = "data_type/entity_type" }
 proto_builder = { path = "data_type/proto_builder" }
 
-share_service_schema = { path = "share_service_schema" }
-
 account_service_db = { path = "account_service/db" }
 account_service_server = { path = "account_service/server" }
+account_service_main = { path = "account_service/main" }
 
 core_service_db = { path = "core_service/db" }
 core_service_graphql_context = { path = "core_service/graphql/context" }
