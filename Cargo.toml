@@ -6,9 +6,8 @@ resolver = "2"
 members = [
   "common/*",
   "data_type/*",
-  "account_service/db",
-  "account_service/server",
-  "account_service/main",
+  "account_service/*",
+  "search_service/*",
   "core_service/graphql/*",
   "core_service/db",
   "core_service/server",
@@ -20,11 +19,12 @@ members = [
 [workspace.dependencies]
 serde = "1.0.219"
 serde_json = "1.0.143"
-diesel = "2.2.12"
-diesel-async = "0.6.1"
-diesel_migrations = "2.2.0"
+diesel = "2.3.2"
+diesel-async = "0.7.3"
+diesel_migrations = "2.3.0"
 diesel-derive-enum = "2.1.0"
 diesel-derive-newtype = "2.1.2"
+diesel_full_text_search = "2.3.0"
 argon2 = "0.5.3"
 regex = "1.11.2"
 percent-encoding = "2.3.2"
@@ -91,6 +91,10 @@ proto_builder = { path = "data_type/proto_builder" }
 account_service_db = { path = "account_service/db" }
 account_service_server = { path = "account_service/server" }
 account_service_main = { path = "account_service/main" }
+
+search_service_db = { path = "search_service/db" }
+search_service_server = { path = "search_service/server" }
+search_service_main = { path = "search_service/main" }
 
 core_service_db = { path = "core_service/db" }
 core_service_graphql_context = { path = "core_service/graphql/context" }

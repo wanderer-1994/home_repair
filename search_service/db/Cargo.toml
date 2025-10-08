@@ -1,0 +1,22 @@
+[package]
+name = "search_service_db"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+diesel = { workspace = true, features = ["chrono"] }
+diesel-async = { workspace = true, features = [
+    "postgres",
+    "deadpool",
+    "async-connection-wrapper",
+] }
+diesel_migrations = { workspace = true, features = ["postgres"] }
+diesel_full_text_search.workspace = true
+
+# Internal dependencies
+entity_type = { workspace = true, features = ["db"] }
+error.workspace = true
+paging.workspace = true
+db_utils.workspace = true
+actor_auth.workspace = true

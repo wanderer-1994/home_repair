@@ -1,0 +1,16 @@
+[package]
+name = "search_service_server"
+version.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+tracing.workspace = true
+scoped-futures.workspace = true
+
+# Internal dependencies
+paging.workspace = true
+error.workspace = true
+entity_type.workspace = true
+db_utils.workspace = true
+search_service_db.workspace = true

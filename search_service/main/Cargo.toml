@@ -1,0 +1,13 @@
+[package]
+name = "search_service_main"
+edition = "2024"
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+
+# Internal dependencies
+error.workspace = true
+db_utils.workspace = true
+search_service_db.workspace = true
+search_service_server.workspace = true

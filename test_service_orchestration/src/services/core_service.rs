@@ -11,6 +11,7 @@ use core_service_server::config_types::HttpConfig;
 use db_utils::PgConnectionPool;
 use error::{Error, Result};
 use moka::future::CacheBuilder;
+use search_service_server::SearchService;
 use sms_sender::{TestSmsReceiver, TestSmsSender};
 use std::sync::Arc;
 use test_utils::PostgresContainer;
@@ -25,6 +26,7 @@ pub struct CoreServiceParams {
 pub(crate) struct CoreServiceParamsInner<'a> {
     pub postgres_container: &'a PostgresContainer,
     pub account_service_client: AccountService,
+    pub search_service_client: SearchService,
     pub features: Features,
 }
 
@@ -40,6 +42,7 @@ impl CoreServiceParamsInner<'_> {
         let CoreServiceParamsInner {
             postgres_container,
             account_service_client,
+            search_service_client,
             features,
         } = self;
 
@@ -77,6 +80,7 @@ impl CoreServiceParamsInner<'_> {
                     cors_origins: vec![TEST_ORIGIN.to_string()],
                 },
                 account_service_client,
+                search_service_client,
                 sms_sender: Arc::new(sms_sender),
                 phone_pending_registration_cache: Arc::new(
                     CacheBuilder::new(10_000)

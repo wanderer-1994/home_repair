@@ -29,10 +29,18 @@ impl ServiceParams {
         .init()
         .await?;
 
+        #[cfg(feature = "search_service")]
+        let search_service = crate::search_service::SearchServiceParamsInner {
+            postgres_container: &pg_container,
+        }
+        .init()
+        .await?;
+
         #[cfg(feature = "core_service")]
         let core_service = crate::core_service::CoreServiceParamsInner {
             postgres_container: &pg_container,
             account_service_client: account_service.service_client.clone(),
+            search_service_client: search_service.service_client.clone(),
             features: self.core_service.features,
         }
         .init()
