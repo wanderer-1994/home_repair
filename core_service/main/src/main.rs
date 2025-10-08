@@ -9,6 +9,7 @@ use core_service_server::{
     config_types::{HttpConfig, SameSiteConfig},
 };
 use moka::future::CacheBuilder;
+use search_service_main as sea_main;
 use serde::Deserialize;
 use sms_sender::TerminalSmsSender;
 use std::{net::SocketAddr, sync::Arc};
@@ -59,6 +60,26 @@ struct CmdArgs {
     /// Password for postgres account service db connection.
     #[clap(long)]
     acc_db_password: String,
+
+    /// Endpoint (DNS name or IP address) of the postgres search service db connection
+    #[clap(long)]
+    sea_db_endpoint: String,
+
+    /// Port for the postgres search service db.
+    #[clap(long)]
+    sea_db_port: u16,
+
+    /// Name of the postgres search service db.
+    #[clap(long)]
+    sea_db_name: String,
+
+    /// Username for postgres search service db connection.
+    #[clap(long)]
+    sea_db_user: String,
+
+    /// Password for postgres search service db connection.
+    #[clap(long)]
+    sea_db_password: String,
 
     /// Dhall configuration file for [ServerConfig].
     #[clap(long)]
@@ -146,6 +167,16 @@ async fn start_server() {
     .await
     .expect("Failed to create account service");
 
+    let search_service_client = sea_main::start_server(sea_main::CmdArgs {
+        db_endpoint: cmd_args.sea_db_endpoint,
+        db_port: cmd_args.sea_db_port,
+        db_name: cmd_args.sea_db_name,
+        db_user: cmd_args.sea_db_user,
+        db_password: cmd_args.sea_db_password,
+    })
+    .await
+    .expect("Failed to create account service");
+
     Server {
         db_connection_pool: db_connection_pool.clone(),
         environment_config,
@@ -155,6 +186,7 @@ async fn start_server() {
             cors_origins: config.cors_origins,
         },
         account_service_client,
+        search_service_client,
         // TODO (MVP): implement zalo SMS sender
         sms_sender: Arc::new(TerminalSmsSender),
         // TODO: replace with Redis cache. For MVP, temporary in-memory cache

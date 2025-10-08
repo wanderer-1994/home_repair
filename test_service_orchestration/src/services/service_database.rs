@@ -3,10 +3,15 @@ use error::Result;
 use test_utils::PostgresContainer;
 
 pub const ACCOUNT_SERVICE_DATABASE: &str = "account_service";
+pub const SEARCH_SERVICE_DATABASE: &str = "seaerch_service";
 pub const CORE_SERVICE_DATABASE: &str = "core_service";
 
 /// All services database, more will be added in future
-const SERVICE_DATABASES: [&str; 2] = [ACCOUNT_SERVICE_DATABASE, CORE_SERVICE_DATABASE];
+const SERVICE_DATABASES: [&str; 3] = [
+    ACCOUNT_SERVICE_DATABASE,
+    SEARCH_SERVICE_DATABASE,
+    CORE_SERVICE_DATABASE,
+];
 
 pub async fn prepare_database() -> Result<PostgresContainer> {
     let postgres = test_utils::setup_postgres().await?;

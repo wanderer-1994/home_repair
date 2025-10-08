@@ -6,8 +6,11 @@ edition.workspace = true
 
 [features]
 account_service = []
-
-core_service = ["account_service"]
+search_service = []
+core_service = [
+    "account_service",
+    "search_service",
+]
 
 [dependencies]
 tokio.workspace = true
@@ -26,6 +29,8 @@ random_util.workspace = true
 sms_sender.workspace = true
 account_service_db.workspace = true
 account_service_server.workspace = true
+search_service_db.workspace = true
+search_service_server.workspace = true
 core_service_db.workspace = true
 core_service_graphql_context.workspace = true
 core_service_server.workspace = true

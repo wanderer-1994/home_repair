@@ -20,6 +20,7 @@ use core_service_graphql_loader::CacheConfig;
 use db_utils::PgConnectionPool;
 use error::{Error, Result};
 use moka::future::Cache;
+use search_service_server::SearchService;
 use service_http::ACCESS_TOKEN_COOKIE_KEY;
 use sms_sender::SmsSender;
 use std::{net::SocketAddr, sync::Arc};
@@ -37,6 +38,7 @@ pub struct Server {
     pub features: Features,
     pub http_config: HttpConfig,
     pub account_service_client: AccountService,
+    pub search_service_client: SearchService,
     pub sms_sender: Arc<dyn SmsSender>,
     pub phone_pending_registration_cache: Arc<Cache<String, String>>,
 }

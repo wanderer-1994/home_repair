@@ -12,3 +12,6 @@ pub use pagination::*;
 
 mod tsquery;
 pub use tsquery::*;
+
+mod sql_function;
+pub use sql_function::*;
