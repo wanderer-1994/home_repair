@@ -4,13 +4,13 @@ pub const MIN_USER_PAGE_SIZE: i64 = 12;
 pub const MAX_USER_PAGE_SIZE: i64 = 20;
 
 #[derive(Debug, Clone, Copy)]
-pub struct PagingConfig {
+pub struct PagingOffsetConfig {
     pub page: i64,
     pub page_size: i64,
     pub offset: i64,
 }
 
-impl PagingConfig {
+impl PagingOffsetConfig {
     pub fn new(page: i64, page_size: i64) -> Result<Self> {
         if page < 1 {
             return Err(Error::invalid_argument(
@@ -36,7 +36,7 @@ impl PagingConfig {
     }
 }
 
-impl Default for PagingConfig {
+impl Default for PagingOffsetConfig {
     fn default() -> Self {
         Self {
             page: 1,
@@ -47,14 +47,30 @@ impl Default for PagingConfig {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct PagingInfo {
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+pub struct PagingOffsetInput {
+    pub page: i64,
+    pub page_size: i64,
+}
+
+impl TryFrom<PagingOffsetInput> for PagingOffsetConfig {
+    type Error = Error;
+
+    fn try_from(value: PagingOffsetInput) -> Result<Self> {
+        Self::new(value.page, value.page_size)
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+#[cfg_attr(feature = "graphql", derive(async_graphql::SimpleObject))]
+pub struct PagingOffsetInfo {
     pub page: i64,
     pub page_size: i64,
     pub total_count: i64,
 }
 
 #[derive(Debug)]
-pub struct PagingSearchPayload<T> {
-    pub paging_info: PagingInfo,
+pub struct PagingOffsetPayload<T> {
+    pub paging_info: PagingOffsetInfo,
     pub items: Vec<T>,
 }

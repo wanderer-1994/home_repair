@@ -5,7 +5,7 @@ use diesel_async::RunQueryDsl;
 use diesel_full_text_search::{self as dfts, TsVectorExtensions};
 use entity_type::{HandymanId, ServiceLayer2};
 use error::Result;
-use paging::{PagingConfig, PagingInfo, PagingSearchPayload};
+use paging::{PagingOffsetConfig, PagingOffsetInfo, PagingOffsetPayload};
 
 #[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = handyman)]
@@ -92,9 +92,9 @@ impl HandymanSearch {
             name,
             skills,
         }: HandymanSearchFilter,
-        paging_config: PagingConfig,
+        paging_config: PagingOffsetConfig,
         conn: &mut AsyncPgConnection,
-    ) -> Result<PagingSearchPayload<HandymanId>> {
+    ) -> Result<PagingOffsetPayload<HandymanId>> {
         let mut query = handyman::table.select(handyman::handyman_id).into_boxed();
 
         if let Some(handyman_ids) = handyman_ids {
@@ -121,8 +121,8 @@ impl HandymanSearch {
             .load_and_count_total::<HandymanId>(conn)
             .await?;
 
-        Ok(PagingSearchPayload {
-            paging_info: PagingInfo {
+        Ok(PagingOffsetPayload {
+            paging_info: PagingOffsetInfo {
                 page: paging_config.page,
                 page_size: paging_config.page_size,
                 total_count,

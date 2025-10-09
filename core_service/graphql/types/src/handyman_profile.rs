@@ -1,4 +1,4 @@
-use crate::{CachedNode, GlobalId, HandymanExpertiseGroup};
+use crate::{CachedNode, GlobalId, HandymanServiceGroup};
 use account_service_db as acc_db;
 use async_graphql::{Context, ID, Object};
 use core_service_db as db;
@@ -44,21 +44,18 @@ impl HandymanProfile {
         Ok(&self.get(ctx).await?.last_name)
     }
 
-    async fn expertises(&self, ctx: &Context<'_>) -> Result<Vec<HandymanExpertiseGroup>> {
+    async fn expertises(&self, ctx: &Context<'_>) -> Result<Vec<HandymanServiceGroup>> {
         let context = ctx.data::<RequestContext>()?;
         let session_ctx = context.try_session_context().await?;
         let actor_auth = session_ctx.as_actor_auth();
         let handyman_id = self.get(ctx).await?.handyman_id;
 
         let group = with_readonly_db(&context.db_connection_pool, |conn| {
-            db::HandymanExpertise::get_by_handyman(&actor_auth, handyman_id, conn).scope_boxed()
+            db::HandymanService::get_by_handyman(&actor_auth, handyman_id, conn).scope_boxed()
         })
         .await?
         .into_group();
 
-        Ok(group
-            .into_iter()
-            .map(HandymanExpertiseGroup::from)
-            .collect())
+        Ok(group.into_iter().map(HandymanServiceGroup::from).collect())
     }
 }

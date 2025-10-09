@@ -11,6 +11,7 @@ use core_service_graphql_context::{
 use core_service_graphql_loader::CacheConfig;
 use db_utils::PgConnectionPool;
 use moka::future::Cache;
+use search_service_server::SearchService;
 use sms_sender::SmsSender;
 use std::{net::SocketAddr, sync::Arc};
 
@@ -24,6 +25,7 @@ pub struct AppState {
     pub sms_sender: Arc<dyn SmsSender>,
     pub loader_cache_config: CacheConfig,
     pub account_service_client: AccountService,
+    pub search_service_client: SearchService,
     pub phone_pending_registration_cache: Arc<Cache<String, String>>,
 }
 
@@ -45,6 +47,7 @@ pub async fn create_graphql_schema_extension(
         cookie_config: app_state.cookie_config,
         remote_addr,
         account_service_client: app_state.account_service_client,
+        search_service_client: app_state.search_service_client,
         sms_sender: app_state.sms_sender,
         phone_pending_registration_cache: app_state.phone_pending_registration_cache,
         loader_cache_config: app_state.loader_cache_config,

@@ -22,4 +22,5 @@ hex_converter.workspace = true
 service_http.workspace = true
 sms_sender.workspace = true
 account_service_server.workspace = true
+search_service_server.workspace = true
 core_service_graphql_loader.workspace = true

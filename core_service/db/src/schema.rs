@@ -1,7 +1,7 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    handyman_expertise (id) {
+    handyman_service (id) {
         id -> Int8,
         handyman_id -> Int8,
         service -> entity_type::ServiceLayer2Mapping,

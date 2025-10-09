@@ -16,6 +16,7 @@ chrono.workspace = true
 scoped-futures.workspace = true
 
 # Yearnings internal deps
+paging = { workspace = true, features = ["graphql"] }
 actor_auth.workspace = true
 db_utils.workspace = true
 error.workspace = true

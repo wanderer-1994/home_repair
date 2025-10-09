@@ -104,6 +104,7 @@ impl Server {
             environment_config: Arc::clone(&self.environment_config),
             sms_sender: self.sms_sender.clone(),
             account_service_client: self.account_service_client.clone(),
+            search_service_client: self.search_service_client.clone(),
             phone_pending_registration_cache: self.phone_pending_registration_cache.clone(),
             loader_cache_config,
         }

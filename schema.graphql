@@ -54,47 +54,53 @@ type HandymanCreateProfilePayload {
 	handyman: Handyman!
 }
 
-type HandymanExpertise implements Node {
+type HandymanProfile implements Node {
+	id: ID!
+	firstName: String!
+	lastName: String!
+	expertises: [HandymanServiceGroup!]!
+}
+
+input HandymanProfileAddServicesInput {
+	handymanId: ID!
+	services: [NewHandymanService!]!
+}
+
+type HandymanProfileAddServicesPayload {
+	profile: HandymanProfile!
+}
+
+input HandymanProfileUpdateServiceChangeset {
+	note: SetValueString
+	rateVnd: SetValueInt32
+}
+
+input HandymanProfileUpdateServiceInput {
+	handymanId: ID!
+	serviceId: ID!
+	changeset: HandymanProfileUpdateServiceChangeset!
+}
+
+type HandymanProfileUpdateServicePayload {
+	service: HandymanService!
+}
+
+input HandymanSearchFilter {
+	services: [ServiceLayer2!]
+	name: String
+	ids: [ID!]
+}
+
+type HandymanService implements Node {
 	id: ID!
 	service: Service!
 	note: String
 	rateVnd: Int
 }
 
-type HandymanExpertiseGroup {
+type HandymanServiceGroup {
 	group: ServiceLayer1!
-	expertises: [HandymanExpertise!]!
-}
-
-type HandymanProfile implements Node {
-	id: ID!
-	firstName: String!
-	lastName: String!
-	expertises: [HandymanExpertiseGroup!]!
-}
-
-input HandymanProfileAddExpertisesInput {
-	handymanId: ID!
-	expertises: [NewHandymanExpertise!]!
-}
-
-type HandymanProfileAddExpertisesPayload {
-	profile: HandymanProfile!
-}
-
-input HandymanProfileUpdateExpertiseChangeset {
-	note: SetValueString
-	rateVnd: SetValueInt32
-}
-
-input HandymanProfileUpdateExpertiseInput {
-	handymanId: ID!
-	expertiseId: ID!
-	changeset: HandymanProfileUpdateExpertiseChangeset!
-}
-
-type HandymanProfileUpdateExpertisePayload {
-	expertise: HandymanExpertise!
+	services: [HandymanService!]!
 }
 
 type Mutation {
@@ -103,8 +109,8 @@ type Mutation {
 	userSignInWithPassword(input: UserSignInWithPasswordInput!): UserSignInWithPasswordPayload!
 	customerCreateProfile(input: CustomerCreateProfileInput!): CustomerCreateProfilePayload!
 	handymanCreateProfile(input: HandymanCreateProfileInput!): HandymanCreateProfilePayload!
-	handymanProfileAddExpertises(input: HandymanProfileAddExpertisesInput!): HandymanProfileAddExpertisesPayload!
-	handymanProfileUpdateExpertise(input: HandymanProfileUpdateExpertiseInput!): HandymanProfileUpdateExpertisePayload!
+	handymanProfileAddServices(input: HandymanProfileAddServicesInput!): HandymanProfileAddServicesPayload!
+	handymanProfileUpdateService(input: HandymanProfileUpdateServiceInput!): HandymanProfileUpdateServicePayload!
 }
 
 """
@@ -116,7 +122,7 @@ ISO 8601 combined date and time without timezone.
 """
 scalar NaiveDateTime
 
-input NewHandymanExpertise {
+input NewHandymanService {
 	service: ServiceLayer2!
 	note: String
 	rateVnd: Int
@@ -130,16 +136,33 @@ interface Node {
 	id: ID!
 }
 
+type PagingOffsetInfo {
+	page: Int!
+	pageSize: Int!
+	totalCount: Int!
+}
+
+input PagingOffsetInput {
+	page: Int!
+	pageSize: Int!
+}
+
+type PagingOffsetPayload {
+	pagingInfo: PagingOffsetInfo!
+	items: [Handyman!]!
+}
+
 type Query {
 	node(id: ID!): Node
-	test: [String!]!
 	session: Session
 	serviceGroups: [ServiceGroup!]!
+	handymanSearch(filter: HandymanSearchFilter!, pagingConfig: PagingOffsetInput!): PagingOffsetPayload!
 }
 
 type Service {
 	serviceType: ServiceLayer2!
 	serviceGroup: ServiceGroup!
+	recommendedRateVnd: Int
 }
 
 type ServiceGroup {

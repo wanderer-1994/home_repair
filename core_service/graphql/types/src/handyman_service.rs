@@ -1,35 +1,35 @@
 use crate::{GlobalId, Service};
 use async_graphql::{ID, Object, SimpleObject};
 use core_service_db as db;
-use entity_type::{HandymanExpertiseId, ServiceLayer1};
+use entity_type::{HandymanServiceId, ServiceLayer1};
 use error::{Error, Result};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct HandymanExpertise {
-    pub id: HandymanExpertiseId,
+pub struct HandymanService {
+    pub id: HandymanServiceId,
     #[serde(skip, default = "Option::default")]
-    inner: Option<Arc<db::HandymanExpertise>>,
+    inner: Option<Arc<db::HandymanService>>,
 }
 
-impl HandymanExpertise {
-    pub fn new(inner: Arc<db::HandymanExpertise>) -> Self {
+impl HandymanService {
+    pub fn new(inner: Arc<db::HandymanService>) -> Self {
         Self {
             id: inner.id,
             inner: Some(inner),
         }
     }
 
-    fn get(&self) -> Result<&db::HandymanExpertise> {
+    fn get(&self) -> Result<&db::HandymanService> {
         self.inner
             .as_deref()
-            .ok_or_else(|| Error::internal("HandymanExpertise is initiated with non value"))
+            .ok_or_else(|| Error::internal("HandymanService is initiated with non value"))
     }
 }
 
 #[Object]
-impl HandymanExpertise {
+impl HandymanService {
     pub async fn id(&self) -> Result<ID> {
         self.as_global_id()
     }
@@ -48,18 +48,18 @@ impl HandymanExpertise {
 }
 
 #[derive(SimpleObject)]
-pub struct HandymanExpertiseGroup {
+pub struct HandymanServiceGroup {
     group: ServiceLayer1,
-    expertises: Vec<HandymanExpertise>,
+    services: Vec<HandymanService>,
 }
 
-impl From<db::HandymanExpertiseGroup> for HandymanExpertiseGroup {
-    fn from(db::HandymanExpertiseGroup { group, expertises }: db::HandymanExpertiseGroup) -> Self {
-        HandymanExpertiseGroup {
+impl From<db::HandymanServiceGroup> for HandymanServiceGroup {
+    fn from(db::HandymanServiceGroup { group, services }: db::HandymanServiceGroup) -> Self {
+        HandymanServiceGroup {
             group,
-            expertises: expertises
+            services: services
                 .into_iter()
-                .map(|e| HandymanExpertise::new(Arc::new(e)))
+                .map(|e| HandymanService::new(Arc::new(e)))
                 .collect(),
         }
     }

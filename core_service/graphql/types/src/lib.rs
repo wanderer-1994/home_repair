@@ -22,5 +22,5 @@ pub use handyman::*;
 mod handyman_profile;
 pub use handyman_profile::*;
 
-mod handyman_expertise;
-pub use handyman_expertise::*;
+mod handyman_service;
+pub use handyman_service::*;
