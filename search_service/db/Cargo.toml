@@ -13,6 +13,7 @@ diesel-async = { workspace = true, features = [
 ] }
 diesel_migrations = { workspace = true, features = ["postgres"] }
 diesel_full_text_search.workspace = true
+postgis_diesel.workspace = true
 
 # Internal dependencies
 entity_type = { workspace = true, features = ["db"] }

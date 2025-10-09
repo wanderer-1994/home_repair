@@ -1,7 +1,11 @@
-@@ -1,19 +1,10 @@
+@@ -1,26 +1,12 @@
  // @generated automatically by Diesel CLI.
  
 -pub mod sql_types {
+-    #[derive(diesel::sql_types::SqlType)]
+-    #[diesel(postgres_type(name = "geography"))]
+-    pub struct Geography;
+-
 -    #[derive(diesel::sql_types::SqlType)]
 -    #[diesel(postgres_type(name = "tsvector", schema = "pg_catalog"))]
 -    pub struct Tsvector;
@@ -10,6 +14,7 @@
  diesel::table! {
 -    use diesel::sql_types::*;
 -    use super::sql_types::Tsvector;
+-    use super::sql_types::Geography;
 -
      handyman (handyman_id) {
          handyman_id -> Int8,
@@ -18,5 +23,8 @@
 -        search_vector -> Nullable<Tsvector>,
 +        skills -> Nullable<Array<Nullable<entity_type::ServiceLayer2Mapping>>>,
 +        search_vector -> Nullable<diesel_full_text_search::TsVector>,
+         avg_rating_score -> Nullable<Int2>,
+-        location -> Nullable<Geography>,
++        location -> Nullable<postgis_diesel::sql_types::Geometry>,
      }
  }

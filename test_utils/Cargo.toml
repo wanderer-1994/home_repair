@@ -6,6 +6,7 @@ edition.workspace = true
 
 [dependencies]
 tokio.workspace = true
+testcontainers.workspace = true
 testcontainers-modules = { workspace = true, features = ["postgres", "localstack", "redis"] }
 uuid = { workspace = true, features = ["v7"] }
 diesel_migrations = { workspace = true, features = ["postgres"] }

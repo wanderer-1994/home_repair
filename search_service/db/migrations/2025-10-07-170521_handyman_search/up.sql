@@ -5,7 +5,10 @@ CREATE TABLE handyman (
     handyman_id BIGINT PRIMARY KEY,
     full_name TEXT,
     skills TEXT[],
-    search_vector TSVECTOR
+    search_vector TSVECTOR,
+    avg_rating_score SMALLINT CHECK (avg_rating_score >= 0 AND avg_rating_score <= 500),
+    -- GEOGRAPHY type available by `CREATE EXTENSION postgis;`
+    location GEOGRAPHY(POINT, 4326)
 );
 
 CREATE INDEX skills_gin_idx ON handyman USING GIN (skills);

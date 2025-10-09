@@ -36,15 +36,15 @@ impl HandymanSearch {
         Ok(result)
     }
 
-    pub async fn index_add_skill(
+    pub async fn index_add_skills(
         handyman_id: HandymanId,
-        skill: ServiceLayer2,
+        skills: &[ServiceLayer2],
         conn: &mut AsyncPgConnection,
     ) -> Result<Self> {
         let result = diesel::insert_into(handyman::table)
             .values((
                 handyman::handyman_id.eq(handyman_id),
-                handyman::skills.eq(vec![skill]),
+                handyman::skills.eq(skills),
             ))
             .on_conflict(handyman::handyman_id)
             .do_update()
@@ -86,6 +86,7 @@ impl HandymanSearch {
         Ok(result)
     }
 
+    /// Search handyman order by ranking desc
     pub async fn search(
         HandymanSearchFilter {
             handyman_ids,

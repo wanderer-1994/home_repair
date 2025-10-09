@@ -44,7 +44,7 @@ impl HandymanProfile {
         Ok(&self.get(ctx).await?.last_name)
     }
 
-    async fn expertises(&self, ctx: &Context<'_>) -> Result<Vec<HandymanServiceGroup>> {
+    async fn services(&self, ctx: &Context<'_>) -> Result<Vec<HandymanServiceGroup>> {
         let context = ctx.data::<RequestContext>()?;
         let session_ctx = context.try_session_context().await?;
         let actor_auth = session_ctx.as_actor_auth();

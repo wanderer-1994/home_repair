@@ -8,6 +8,7 @@ use core_service_graphql_context::RequestContext;
 use core_service_graphql_types::{Customer, GlobalId, Handyman, Session};
 use entity_type::AccountType;
 use error::Result;
+use search_service_server::{HandymanIndexRequest, HandymanIndexType};
 use sms_sender::{MessageType, OtpVerificationForRegistration, SendSmsInput};
 use std::sync::Arc;
 
@@ -224,6 +225,14 @@ impl SignUpAndAuthMutation {
             })
             .await?
             .profile;
+
+        context
+            .search_service_client
+            .handyman_index(HandymanIndexRequest {
+                handyman_id,
+                index_type: HandymanIndexType::SetFullName(profile.full_name()),
+            })
+            .await?;
 
         context
             .handyman_loaders

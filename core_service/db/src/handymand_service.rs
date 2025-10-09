@@ -4,12 +4,12 @@ use crate::schema::handyman_service;
 use actor_auth::ActorAuth;
 use chrono::NaiveDateTime;
 use db_utils::AsyncPgConnection;
-use diesel::prelude::*;
+use diesel::{dsl::exists, prelude::*};
 use diesel_async::RunQueryDsl;
 use entity_type::{
     HandymanAccessGuardId, HandymanId, HandymanServiceId, ServiceLayer1, ServiceLayer2,
 };
-use error::Result;
+use error::{Error, Result};
 
 #[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = handyman_service)]
@@ -93,27 +93,40 @@ impl HandymanService {
         handyman_id: HandymanId,
         ids_to_delete: &[HandymanServiceId],
         conn: &mut AsyncPgConnection,
-    ) -> Result<Vec<HandymanServiceId>> {
+    ) -> Result<Vec<Self>> {
         actor_auth.require_handyman_access(handyman_id)?;
 
-        let deleted_ids = diesel::delete(
+        let records = diesel::delete(
             handyman_service::table.filter(
                 handyman_service::handyman_id
                     .eq(handyman_id)
                     .and(handyman_service::id.eq_any(ids_to_delete)),
             ),
         )
-        .returning(handyman_service::id)
-        .get_results::<HandymanServiceId>(conn)
+        .returning(Self::as_returning())
+        .get_results::<Self>(conn)
         .await?;
 
-        db_utils::validate_rows_affected(
-            "handyman_service",
-            ids_to_delete.len(),
-            deleted_ids.len(),
-        )?;
+        db_utils::validate_rows_affected("handyman_service", ids_to_delete.len(), records.len())?;
 
-        Ok(deleted_ids)
+        Ok(records)
+    }
+
+    pub async fn handyman_service_exists(
+        handyman_id: HandymanId,
+        service: ServiceLayer2,
+        conn: &mut AsyncPgConnection,
+    ) -> Result<bool> {
+        diesel::select(exists(
+            handyman_service::table.filter(
+                handyman_service::handyman_id
+                    .eq(handyman_id)
+                    .and(handyman_service::service.eq(service)),
+            ),
+        ))
+        .get_result::<bool>(conn)
+        .await
+        .map_err(Error::from)
     }
 }
 
