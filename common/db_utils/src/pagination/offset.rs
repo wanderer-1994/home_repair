@@ -8,14 +8,14 @@ use diesel::{
     sql_types,
 };
 use diesel_async::{AsyncPgConnection, RunQueryDsl, methods::LoadQuery};
-use paging::PagingConfig;
+use paging::PagingOffsetConfig;
 
 pub trait PaginateOffset: Sized {
-    fn paginate_offset(self, paging_config: PagingConfig) -> PaginatedOffset<Self>;
+    fn paginate_offset(self, paging_config: PagingOffsetConfig) -> PaginatedOffset<Self>;
 }
 
 impl<T> PaginateOffset for T {
-    fn paginate_offset(self, paging_config: PagingConfig) -> PaginatedOffset<Self> {
+    fn paginate_offset(self, paging_config: PagingOffsetConfig) -> PaginatedOffset<Self> {
         PaginatedOffset {
             query: self,
             paging_config,
@@ -26,7 +26,7 @@ impl<T> PaginateOffset for T {
 #[derive(Debug, Clone, Copy, QueryId)]
 pub struct PaginatedOffset<T> {
     query: T,
-    paging_config: PagingConfig,
+    paging_config: PagingOffsetConfig,
 }
 
 impl<T: Query> Query for PaginatedOffset<T> {

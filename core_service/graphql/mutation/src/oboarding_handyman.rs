@@ -1,9 +1,7 @@
 use async_graphql::{Context, ID, InputObject, Object, SimpleObject};
 use core_service_db as db;
 use core_service_graphql_context::RequestContext;
-use core_service_graphql_types::{
-    GlobalId, Handyman, HandymanExpertise, HandymanProfile, SetValue,
-};
+use core_service_graphql_types::{GlobalId, Handyman, HandymanProfile, HandymanService, SetValue};
 use db_utils::with_mutable_db;
 use entity_type::{HandymanAccessGuardId, ServiceLayer2};
 use error::Result;
@@ -16,14 +14,14 @@ pub struct OnboardingHandymanMutation;
 #[Object]
 impl OnboardingHandymanMutation {
     #[tracing::instrument(skip(self, ctx))]
-    async fn handyman_profile_add_expertises(
+    async fn handyman_profile_add_services(
         &self,
         ctx: &Context<'_>,
-        input: HandymanProfileAddExpertisesInput,
-    ) -> Result<HandymanProfileAddExpertisesPayload> {
-        let HandymanProfileAddExpertisesInput {
+        input: HandymanProfileAddServicesInput,
+    ) -> Result<HandymanProfileAddServicesPayload> {
+        let HandymanProfileAddServicesInput {
             handyman_id,
-            expertises,
+            services,
         } = input;
         let handyman_id = Handyman::from_global_id(&handyman_id)?.inner_id();
 
@@ -32,33 +30,34 @@ impl OnboardingHandymanMutation {
         let actor_auth = session_ctx.as_actor_auth();
         actor_auth.require_handyman_access(handyman_id)?;
 
-        let new_records = expertises
+        let new_records = services
             .iter()
-            .map(db::NewHandymanExpertise::from)
+            .map(db::NewHandymanService::from)
             .collect::<Vec<_>>();
         with_mutable_db(&context.db_connection_pool, |conn| {
-            db::HandymanExpertise::create_many(&actor_auth, handyman_id, &new_records, conn)
+            db::HandymanService::create_many(&actor_auth, handyman_id, &new_records, conn)
                 .scope_boxed()
         })
         .await?;
 
-        Ok(HandymanProfileAddExpertisesPayload {
+        Ok(HandymanProfileAddServicesPayload {
             profile: HandymanProfile::new(handyman_id),
         })
     }
 
-    async fn handyman_profile_update_expertise(
+    #[tracing::instrument(skip(self, ctx))]
+    async fn handyman_profile_update_service(
         &self,
         ctx: &Context<'_>,
-        input: HandymanProfileUpdateExpertiseInput,
-    ) -> Result<HandymanProfileUpdateExpertisePayload> {
-        let HandymanProfileUpdateExpertiseInput {
+        input: HandymanProfileUpdateServiceInput,
+    ) -> Result<HandymanProfileUpdateServicePayload> {
+        let HandymanProfileUpdateServiceInput {
             handyman_id,
-            expertise_id,
+            service_id,
             changeset,
         } = input;
         let handyman_id = Handyman::from_global_id(&handyman_id)?.inner_id();
-        let expertise_id = HandymanExpertise::from_global_id(&expertise_id)?.id;
+        let service_id = HandymanService::from_global_id(&service_id)?.id;
 
         let context = ctx.data::<RequestContext>()?;
         let session_ctx = context.try_session_context().await?;
@@ -66,47 +65,47 @@ impl OnboardingHandymanMutation {
         actor_auth.require_handyman_access(handyman_id)?;
 
         let updated = with_mutable_db(&context.db_connection_pool, |conn| {
-            db::HandymanExpertise::update(
+            db::HandymanService::update(
                 &actor_auth,
                 HandymanAccessGuardId {
                     handyman_id,
-                    entity_id: expertise_id,
+                    entity_id: service_id,
                 },
-                db::HandymanExpertiseChangeset::from(&changeset),
+                db::HandymanServiceChangeset::from(&changeset),
                 conn,
             )
             .scope_boxed()
         })
         .await?;
 
-        Ok(HandymanProfileUpdateExpertisePayload {
-            expertise: HandymanExpertise::new(Arc::new(updated)),
+        Ok(HandymanProfileUpdateServicePayload {
+            service: HandymanService::new(Arc::new(updated)),
         })
     }
 }
 
 #[derive(Debug, InputObject)]
-struct HandymanProfileAddExpertisesInput {
+struct HandymanProfileAddServicesInput {
     handyman_id: ID,
-    expertises: Vec<NewHandymanExpertise>,
+    services: Vec<NewHandymanService>,
 }
 
 #[derive(Debug, InputObject)]
-struct NewHandymanExpertise {
+struct NewHandymanService {
     service: ServiceLayer2,
     note: Option<String>,
     rate_vnd: Option<u32>,
 }
 
-impl<'a> From<&'a NewHandymanExpertise> for db::NewHandymanExpertise<'a> {
+impl<'a> From<&'a NewHandymanService> for db::NewHandymanService<'a> {
     fn from(
-        NewHandymanExpertise {
+        NewHandymanService {
             service,
             note,
             rate_vnd,
-        }: &'a NewHandymanExpertise,
+        }: &'a NewHandymanService,
     ) -> Self {
-        db::NewHandymanExpertise {
+        db::NewHandymanService {
             service: *service,
             note: note.as_deref(),
             rate_vnd: rate_vnd.map(|r| r.try_into().unwrap_or(i32::MAX)),
@@ -115,26 +114,26 @@ impl<'a> From<&'a NewHandymanExpertise> for db::NewHandymanExpertise<'a> {
 }
 
 #[derive(SimpleObject)]
-struct HandymanProfileAddExpertisesPayload {
+struct HandymanProfileAddServicesPayload {
     profile: HandymanProfile,
 }
 
 #[derive(Debug, InputObject)]
-struct HandymanProfileUpdateExpertiseInput {
+struct HandymanProfileUpdateServiceInput {
     handyman_id: ID,
-    expertise_id: ID,
-    changeset: HandymanProfileUpdateExpertiseChangeset,
+    service_id: ID,
+    changeset: HandymanProfileUpdateServiceChangeset,
 }
 
 #[derive(Debug, InputObject)]
-struct HandymanProfileUpdateExpertiseChangeset {
+struct HandymanProfileUpdateServiceChangeset {
     note: Option<SetValue<String>>,
     rate_vnd: Option<SetValue<i32>>,
 }
 
-impl<'a> From<&'a HandymanProfileUpdateExpertiseChangeset> for db::HandymanExpertiseChangeset<'a> {
-    fn from(value: &'a HandymanProfileUpdateExpertiseChangeset) -> Self {
-        db::HandymanExpertiseChangeset {
+impl<'a> From<&'a HandymanProfileUpdateServiceChangeset> for db::HandymanServiceChangeset<'a> {
+    fn from(value: &'a HandymanProfileUpdateServiceChangeset) -> Self {
+        db::HandymanServiceChangeset {
             note: value.note.as_ref().map(|s| s.value.as_deref()),
             rate_vnd: value.rate_vnd.as_ref().map(|s| s.value),
         }
@@ -142,6 +141,6 @@ impl<'a> From<&'a HandymanProfileUpdateExpertiseChangeset> for db::HandymanExper
 }
 
 #[derive(SimpleObject)]
-struct HandymanProfileUpdateExpertisePayload {
-    expertise: HandymanExpertise,
+struct HandymanProfileUpdateServicePayload {
+    service: HandymanService,
 }

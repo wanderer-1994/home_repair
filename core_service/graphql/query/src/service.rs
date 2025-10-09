@@ -8,6 +8,7 @@ pub struct ServiceQuery;
 
 #[Object]
 impl ServiceQuery {
+    #[tracing::instrument(skip(self))]
     async fn service_groups(&self) -> Vec<ServiceGroup> {
         ServiceLayer1::iter().map(ServiceGroup).collect()
     }

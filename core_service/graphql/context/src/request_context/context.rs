@@ -11,6 +11,7 @@ use error::{
 };
 use moka::future::Cache;
 use random_util::Random;
+use search_service_server::SearchService;
 use sms_sender::SmsSender;
 use std::{net::SocketAddr, ops::Deref, sync::Arc};
 use tokio::sync::RwLock;
@@ -31,6 +32,7 @@ pub struct ContextInternal {
     pub cookie_config: Arc<CookieConfig>,
     pub remote_addr: SocketAddr,
     pub account_service_client: AccountService,
+    pub search_service_client: SearchService,
     pub sms_sender: Arc<dyn SmsSender>,
     /// Cache [e164_phone_number_str - 6 digits verification code]
     phone_pending_registration_cache: Arc<Cache<String, String>>,
@@ -47,6 +49,7 @@ pub struct NewContextParams {
     pub cookie_config: Arc<CookieConfig>,
     pub remote_addr: SocketAddr,
     pub account_service_client: AccountService,
+    pub search_service_client: SearchService,
     pub sms_sender: Arc<dyn SmsSender>,
     pub phone_pending_registration_cache: Arc<Cache<String, String>>,
     pub loader_cache_config: CacheConfig,
@@ -62,6 +65,7 @@ impl ContextInternal {
             cookie_config,
             remote_addr,
             account_service_client,
+            search_service_client,
             sms_sender,
             phone_pending_registration_cache,
             loader_cache_config,
@@ -86,6 +90,7 @@ impl ContextInternal {
             session_context,
             db_connection_pool,
             account_service_client,
+            search_service_client,
             phone_pending_registration_cache: phone_pending_registration_cache.clone(),
             sms_sender,
             random: Random::default(),

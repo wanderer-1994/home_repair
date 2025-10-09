@@ -799,6 +799,7 @@ dependencies = [
  "http 1.3.1",
  "moka",
  "random_util",
+ "search_service_server",
  "serde",
  "service_http",
  "sms_sender",
@@ -844,11 +845,18 @@ name = "core_service_graphql_query"
 version = "0.1.0"
 dependencies = [
  "async-graphql",
+ "core_service_db",
  "core_service_graphql_context",
  "core_service_graphql_types",
+ "db_utils",
  "entity_type",
  "error",
+ "paging",
+ "scoped-futures",
+ "search_service_db",
+ "search_service_server",
  "strum 0.27.2",
+ "tracing",
 ]
 
 [[package]]
@@ -867,6 +875,7 @@ dependencies = [
  "db_utils",
  "entity_type",
  "error",
+ "paging",
  "scoped-futures",
  "serde",
  "serde_json",
@@ -2796,6 +2805,7 @@ dependencies = [
 name = "paging"
 version = "0.1.0"
 dependencies = [
+ "async-graphql",
  "error",
 ]
 

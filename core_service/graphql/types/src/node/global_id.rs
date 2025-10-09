@@ -91,8 +91,8 @@ impl GlobalId for HandymanProfile {
     const KEY: NodeKey = NodeKey::HandymanProfile;
 }
 
-impl GlobalId for HandymanExpertise {
-    const KEY: NodeKey = NodeKey::HandymanExpertise;
+impl GlobalId for HandymanService {
+    const KEY: NodeKey = NodeKey::HandymanService;
 }
 
 pub fn parse_any_global_id(id: &ID) -> Result<Option<Node>> {

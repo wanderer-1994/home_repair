@@ -2,7 +2,7 @@ use super::SearchService;
 use db_utils::with_readonly_db;
 use entity_type::{HandymanId, ServiceLayer2};
 use error::Result;
-use paging::{PagingConfig, PagingSearchPayload};
+use paging::{PagingOffsetConfig, PagingOffsetPayload};
 use scoped_futures::ScopedFutureExt;
 use search_service_db as db;
 
@@ -103,10 +103,10 @@ pub struct HandymanIndexDeleteResponse {
 #[derive(Debug)]
 pub struct HandymanSearchRequest {
     pub filter: db::HandymanSearchFilter,
-    pub paging_config: PagingConfig,
+    pub paging_config: PagingOffsetConfig,
 }
 
 #[derive(Debug)]
 pub struct HandymanSearchResponse {
-    pub result: PagingSearchPayload<HandymanId>,
+    pub result: PagingOffsetPayload<HandymanId>,
 }

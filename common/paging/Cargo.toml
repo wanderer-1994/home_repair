@@ -4,5 +4,11 @@ edition = "2024"
 version.workspace = true
 rust-version.workspace = true
 
+[features]
+graphql = ["async-graphql"]
+
 [dependencies]
+async-graphql = { workspace = true, optional = true }
+
+# Internal dependencies
 error.workspace = true

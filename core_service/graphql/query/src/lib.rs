@@ -8,4 +8,7 @@ mod session;
 pub(crate) use session::*;
 
 mod service;
-pub use service::*;
+pub(crate) use service::*;
+
+mod handyman_discovery;
+pub(crate) use handyman_discovery::*;
