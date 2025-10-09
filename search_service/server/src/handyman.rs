@@ -1,5 +1,5 @@
 use super::SearchService;
-use db_utils::with_readonly_db;
+use db_utils::{with_mutable_db, with_readonly_db};
 use entity_type::{HandymanId, ServiceLayer2};
 use error::Result;
 use paging::{PagingOffsetConfig, PagingOffsetPayload};
@@ -17,15 +17,15 @@ impl SearchService {
             index_type,
         } = request;
 
-        let index = with_readonly_db(&self.context.db_connection_pool, |conn| {
+        let index = with_mutable_db(&self.context.db_connection_pool, |conn| {
             async {
                 let index = match index_type {
                     HandymanIndexType::SetFullName(full_name) => Some(
                         db::HandymanSearch::index_full_name(handyman_id, &full_name, conn).await?,
                     ),
-                    HandymanIndexType::AddSkill(service) => {
-                        Some(db::HandymanSearch::index_add_skill(handyman_id, service, conn).await?)
-                    }
+                    HandymanIndexType::AddSkills(services) => Some(
+                        db::HandymanSearch::index_add_skills(handyman_id, &services, conn).await?,
+                    ),
                     HandymanIndexType::RemoveSkill(service) => {
                         db::HandymanSearch::index_remove_skill(handyman_id, service, conn).await?
                     }
@@ -46,7 +46,7 @@ impl SearchService {
     ) -> Result<HandymanIndexDeleteResponse> {
         let HandymanIndexDeleteRequest { handyman_id } = request;
 
-        let index = with_readonly_db(&self.context.db_connection_pool, |conn| {
+        let index = with_mutable_db(&self.context.db_connection_pool, |conn| {
             db::HandymanSearch::delete_index(handyman_id, conn).scope_boxed()
         })
         .await?;
@@ -81,7 +81,7 @@ pub struct HandymanIndexRequest {
 #[derive(Debug)]
 pub enum HandymanIndexType {
     SetFullName(String),
-    AddSkill(ServiceLayer2),
+    AddSkills(Vec<ServiceLayer2>),
     RemoveSkill(ServiceLayer2),
 }
 

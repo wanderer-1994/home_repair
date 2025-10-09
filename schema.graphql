@@ -58,7 +58,7 @@ type HandymanProfile implements Node {
 	id: ID!
 	firstName: String!
 	lastName: String!
-	expertises: [HandymanServiceGroup!]!
+	services: [HandymanServiceGroup!]!
 }
 
 input HandymanProfileAddServicesInput {
@@ -68,6 +68,16 @@ input HandymanProfileAddServicesInput {
 
 type HandymanProfileAddServicesPayload {
 	profile: HandymanProfile!
+}
+
+input HandymanProfileRemoveServiceInput {
+	handymanId: ID!
+	serviceId: ID!
+}
+
+type HandymanProfileRemoveServicePayload {
+	profile: HandymanProfile!
+	removedServiceId: ID!
 }
 
 input HandymanProfileUpdateServiceChangeset {
@@ -111,6 +121,7 @@ type Mutation {
 	handymanCreateProfile(input: HandymanCreateProfileInput!): HandymanCreateProfilePayload!
 	handymanProfileAddServices(input: HandymanProfileAddServicesInput!): HandymanProfileAddServicesPayload!
 	handymanProfileUpdateService(input: HandymanProfileUpdateServiceInput!): HandymanProfileUpdateServicePayload!
+	handymanProfileRemoveService(input: HandymanProfileRemoveServiceInput!): HandymanProfileRemoveServicePayload!
 }
 
 """

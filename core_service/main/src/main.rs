@@ -223,6 +223,7 @@ mod tests {
 
     #[test]
     fn test_parsing_configs() {
+        #[allow(clippy::single_element_loop)]
         for file in [
             "config/Local.dhall",
             // "config/Development.dhall",

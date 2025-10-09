@@ -13,7 +13,7 @@ setup-init-docker-sdk:
   #!/usr/bin/env bash
   set -euo pipefail
   cd {{ROOT_DIR}}/docker/
-  docker compose -f docker-compose.yaml up -d
+  docker compose -f docker-compose.yaml up --build -d
 
 dev-customer-app:
   cd $ROOT_DIR/www/packages/customer_app && yarn start

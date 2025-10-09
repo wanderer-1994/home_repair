@@ -5,5 +5,8 @@
 file = "src/schema.rs"
 patch_file = "src/schema.patch"
 
+# Exclude table from PostGIS extension
+filter = { except_tables = ["spatial_ref_sys"] }
+
 [migrations_directory]
 dir = "migrations"

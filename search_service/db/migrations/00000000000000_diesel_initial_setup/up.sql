@@ -1,5 +1,6 @@
 -- Extension for creating tsvector without Vietnamese accent
 CREATE EXTENSION unaccent;
+CREATE EXTENSION postgis;
 
 CREATE FUNCTION array_deduplicate(anyarray)
 RETURNS anyarray AS $$

@@ -14,6 +14,12 @@ pub struct HandymanProfile {
 }
 
 impl HandymanProfile {
+    pub fn full_name(&self) -> String {
+        format!("{} {}", self.last_name, self.first_name)
+    }
+}
+
+impl HandymanProfile {
     pub async fn create(
         actor_auth: &ActorAuth,
         handyman_id: HandymanId,
