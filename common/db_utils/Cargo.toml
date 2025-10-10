@@ -13,6 +13,7 @@ diesel-async = { workspace = true, features = [
     "deadpool",
     "async-connection-wrapper",
 ] }
+postgis_diesel.workspace = true
 regex.workspace = true
 percent-encoding.workspace = true
 

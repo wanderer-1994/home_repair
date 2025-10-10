@@ -69,6 +69,7 @@ impl TryFrom<HandymanSearchFilter> for sea_db::HandymanSearchFilter {
             handyman_ids,
             name,
             skills: services,
+            distance_within: None,
         };
         Ok(result)
     }
