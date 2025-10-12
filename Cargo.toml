@@ -68,7 +68,6 @@ strum_macros = "0.27"
 tonic-prost-build = "0.14.2"
 
 # Test dependencies
-testcontainers = "0.25.0"
 testcontainers-modules = "0.13.0"
 graphql_client = "0.14.0"
 

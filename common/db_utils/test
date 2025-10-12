@@ -1,0 +1,2378 @@
+mod sql_function {
+    use diesel::{
+        define_sql_function,
+        sql_types::{Array, Float8, Int4, Nullable, SingleValue, Text},
+    };
+    use postgis_diesel::sql_types::Geography;
+    #[allow(non_camel_case_types)]
+    pub fn coalesce<T: SingleValue, x, y>(x: x, y: y) -> coalesce<T, x, y>
+    where
+        x: diesel::expression::AsExpression<Nullable<T>>,
+        y: diesel::expression::AsExpression<T>,
+    {
+        coalesce_utils::coalesce {
+            x: x.as_expression(),
+            y: y.as_expression(),
+            T: ::std::marker::PhantomData,
+        }
+    }
+    #[allow(non_camel_case_types, non_snake_case)]
+    ///The return type of [`coalesce()`](super::fn_name)
+    pub type coalesce<T, x, y> = coalesce_utils::coalesce<
+        T,
+        <x as diesel::expression::AsExpression<Nullable<T>>>::Expression,
+        <y as diesel::expression::AsExpression<T>>::Expression,
+    >;
+    #[doc(hidden)]
+    #[allow(non_camel_case_types, non_snake_case, unused_imports)]
+    pub(crate) mod coalesce_utils {
+        use diesel::{self, QueryResult};
+        use diesel::expression::{
+            AsExpression, Expression, SelectableExpression, AppearsOnTable, ValidGrouping,
+        };
+        use diesel::query_builder::{QueryFragment, AstPass};
+        use diesel::sql_types::*;
+        use diesel::internal::sql_functions::*;
+        use super::*;
+        pub struct coalesce<T, x, y> {
+            pub(super) x: x,
+            pub(super) y: y,
+            pub(super) T: ::std::marker::PhantomData<T>,
+        }
+        const _: () = {
+            use diesel;
+            use diesel::internal::derives::numeric_ops as ops;
+            use diesel::expression::{Expression, AsExpression};
+            use diesel::sql_types::ops::{Add, Sub, Mul, Div};
+            use diesel::sql_types::{SqlType, SingleValue};
+            impl<T, x, y, __Rhs> ::std::ops::Add<__Rhs> for coalesce<T, x, y>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Add,
+                <<Self as Expression>::SqlType as Add>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Add>::Rhs>,
+            {
+                type Output = ops::Add<Self, __Rhs::Expression>;
+                fn add(self, rhs: __Rhs) -> Self::Output {
+                    ops::Add::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, x, y, __Rhs> ::std::ops::Sub<__Rhs> for coalesce<T, x, y>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Sub,
+                <<Self as Expression>::SqlType as Sub>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Sub>::Rhs>,
+            {
+                type Output = ops::Sub<Self, __Rhs::Expression>;
+                fn sub(self, rhs: __Rhs) -> Self::Output {
+                    ops::Sub::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, x, y, __Rhs> ::std::ops::Mul<__Rhs> for coalesce<T, x, y>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Mul,
+                <<Self as Expression>::SqlType as Mul>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Mul>::Rhs>,
+            {
+                type Output = ops::Mul<Self, __Rhs::Expression>;
+                fn mul(self, rhs: __Rhs) -> Self::Output {
+                    ops::Mul::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, x, y, __Rhs> ::std::ops::Div<__Rhs> for coalesce<T, x, y>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Div,
+                <<Self as Expression>::SqlType as Div>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Div>::Rhs>,
+            {
+                type Output = ops::Div<Self, __Rhs::Expression>;
+                fn div(self, rhs: __Rhs) -> Self::Output {
+                    ops::Div::new(self, rhs.as_expression())
+                }
+            }
+        };
+        #[automatically_derived]
+        impl<
+            T: ::core::fmt::Debug,
+            x: ::core::fmt::Debug,
+            y: ::core::fmt::Debug,
+        > ::core::fmt::Debug for coalesce<T, x, y> {
+            #[inline]
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::debug_struct_field3_finish(
+                    f,
+                    "coalesce",
+                    "x",
+                    &self.x,
+                    "y",
+                    &self.y,
+                    "T",
+                    &&self.T,
+                )
+            }
+        }
+        #[automatically_derived]
+        impl<
+            T: ::core::clone::Clone,
+            x: ::core::clone::Clone,
+            y: ::core::clone::Clone,
+        > ::core::clone::Clone for coalesce<T, x, y> {
+            #[inline]
+            fn clone(&self) -> coalesce<T, x, y> {
+                coalesce {
+                    x: ::core::clone::Clone::clone(&self.x),
+                    y: ::core::clone::Clone::clone(&self.y),
+                    T: ::core::clone::Clone::clone(&self.T),
+                }
+            }
+        }
+        #[automatically_derived]
+        impl<
+            T: ::core::marker::Copy,
+            x: ::core::marker::Copy,
+            y: ::core::marker::Copy,
+        > ::core::marker::Copy for coalesce<T, x, y> {}
+        const _: () = {
+            use diesel;
+            #[allow(non_camel_case_types)]
+            impl<
+                T: diesel::query_builder::QueryId,
+                x: diesel::query_builder::QueryId,
+                y: diesel::query_builder::QueryId,
+            > diesel::query_builder::QueryId for coalesce<T, x, y> {
+                type QueryId = coalesce<
+                    <T as diesel::query_builder::QueryId>::QueryId,
+                    <x as diesel::query_builder::QueryId>::QueryId,
+                    <y as diesel::query_builder::QueryId>::QueryId,
+                >;
+                const HAS_STATIC_QUERY_ID: bool = <T as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <x as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <y as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && true;
+                const IS_WINDOW_FUNCTION: bool = <T as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <x as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <y as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || false;
+            }
+        };
+        ///The return type of [`coalesce()`](super::fn_name)
+        pub type HelperType<T, x, y> = coalesce<
+            T,
+            <x as AsExpression<Nullable<T>>>::Expression,
+            <y as AsExpression<T>>::Expression,
+        >;
+        impl<T: SingleValue, x, y> Expression for coalesce<T, x, y>
+        where
+            (x, y): Expression,
+        {
+            type SqlType = T;
+        }
+        impl<
+            T: SingleValue,
+            x,
+            y,
+            __DieselInternal,
+        > SelectableExpression<__DieselInternal> for coalesce<T, x, y>
+        where
+            x: SelectableExpression<__DieselInternal>,
+            y: SelectableExpression<__DieselInternal>,
+            Self: AppearsOnTable<__DieselInternal>,
+        {}
+        impl<T: SingleValue, x, y, __DieselInternal> AppearsOnTable<__DieselInternal>
+        for coalesce<T, x, y>
+        where
+            x: AppearsOnTable<__DieselInternal>,
+            y: AppearsOnTable<__DieselInternal>,
+            Self: Expression,
+        {}
+        impl<T: SingleValue, x, y, __DieselInternal> FunctionFragment<__DieselInternal>
+        for coalesce<T, x, y>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            x: QueryFragment<__DieselInternal>,
+            y: QueryFragment<__DieselInternal>,
+        {
+            const FUNCTION_NAME: &'static str = "COALESCE";
+            #[allow(unused_assignments)]
+            fn walk_arguments<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                let mut needs_comma = false;
+                if !self.x.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.x.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                if !self.y.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.y.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                Ok(())
+            }
+        }
+        impl<T: SingleValue, x, y, __DieselInternal> QueryFragment<__DieselInternal>
+        for coalesce<T, x, y>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            x: QueryFragment<__DieselInternal>,
+            y: QueryFragment<__DieselInternal>,
+        {
+            fn walk_ast<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                out.push_sql(
+                    <Self as FunctionFragment<__DieselInternal>>::FUNCTION_NAME,
+                );
+                out.push_sql("(");
+                self.walk_arguments(out.reborrow())?;
+                out.push_sql(")");
+                Ok(())
+            }
+        }
+        pub struct __Derived<x, y>(x, y);
+        const _: () = {
+            use diesel;
+            impl<
+                x,
+                y,
+                __GroupByClause,
+            > diesel::expression::ValidGrouping<__GroupByClause> for __Derived<x, y>
+            where
+                x: diesel::expression::ValidGrouping<__GroupByClause>,
+                y: diesel::expression::ValidGrouping<__GroupByClause>,
+                <x as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate: diesel::expression::MixedAggregates<
+                    <y as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >,
+            {
+                type IsAggregate = <<x as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate as diesel::expression::MixedAggregates<
+                    <y as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >>::Output;
+            }
+        };
+        impl<T: SingleValue, x, y, __DieselInternal> ValidGrouping<__DieselInternal>
+        for coalesce<T, x, y>
+        where
+            __Derived<x, y>: ValidGrouping<__DieselInternal>,
+        {
+            type IsAggregate = <__Derived<
+                x,
+                y,
+            > as ValidGrouping<__DieselInternal>>::IsAggregate;
+        }
+    }
+    #[allow(non_camel_case_types)]
+    pub fn array_agg<T: SingleValue, x>(x: x) -> array_agg<T, x>
+    where
+        x: diesel::expression::AsExpression<T>,
+    {
+        array_agg_utils::array_agg {
+            x: x.as_expression(),
+            T: ::std::marker::PhantomData,
+        }
+    }
+    #[allow(non_camel_case_types, non_snake_case)]
+    ///The return type of [`array_agg()`](super::fn_name)
+    pub type array_agg<T, x> = array_agg_utils::array_agg<
+        T,
+        <x as diesel::expression::AsExpression<T>>::Expression,
+    >;
+    #[doc(hidden)]
+    #[allow(non_camel_case_types, non_snake_case, unused_imports)]
+    pub(crate) mod array_agg_utils {
+        use diesel::{self, QueryResult};
+        use diesel::expression::{
+            AsExpression, Expression, SelectableExpression, AppearsOnTable, ValidGrouping,
+        };
+        use diesel::query_builder::{QueryFragment, AstPass};
+        use diesel::sql_types::*;
+        use diesel::internal::sql_functions::*;
+        use super::*;
+        pub struct array_agg<T, x> {
+            pub(super) x: x,
+            pub(super) T: ::std::marker::PhantomData<T>,
+        }
+        const _: () = {
+            use diesel;
+            use diesel::internal::derives::numeric_ops as ops;
+            use diesel::expression::{Expression, AsExpression};
+            use diesel::sql_types::ops::{Add, Sub, Mul, Div};
+            use diesel::sql_types::{SqlType, SingleValue};
+            impl<T, x, __Rhs> ::std::ops::Add<__Rhs> for array_agg<T, x>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Add,
+                <<Self as Expression>::SqlType as Add>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Add>::Rhs>,
+            {
+                type Output = ops::Add<Self, __Rhs::Expression>;
+                fn add(self, rhs: __Rhs) -> Self::Output {
+                    ops::Add::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, x, __Rhs> ::std::ops::Sub<__Rhs> for array_agg<T, x>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Sub,
+                <<Self as Expression>::SqlType as Sub>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Sub>::Rhs>,
+            {
+                type Output = ops::Sub<Self, __Rhs::Expression>;
+                fn sub(self, rhs: __Rhs) -> Self::Output {
+                    ops::Sub::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, x, __Rhs> ::std::ops::Mul<__Rhs> for array_agg<T, x>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Mul,
+                <<Self as Expression>::SqlType as Mul>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Mul>::Rhs>,
+            {
+                type Output = ops::Mul<Self, __Rhs::Expression>;
+                fn mul(self, rhs: __Rhs) -> Self::Output {
+                    ops::Mul::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, x, __Rhs> ::std::ops::Div<__Rhs> for array_agg<T, x>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Div,
+                <<Self as Expression>::SqlType as Div>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Div>::Rhs>,
+            {
+                type Output = ops::Div<Self, __Rhs::Expression>;
+                fn div(self, rhs: __Rhs) -> Self::Output {
+                    ops::Div::new(self, rhs.as_expression())
+                }
+            }
+        };
+        #[automatically_derived]
+        impl<T: ::core::fmt::Debug, x: ::core::fmt::Debug> ::core::fmt::Debug
+        for array_agg<T, x> {
+            #[inline]
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::debug_struct_field2_finish(
+                    f,
+                    "array_agg",
+                    "x",
+                    &self.x,
+                    "T",
+                    &&self.T,
+                )
+            }
+        }
+        #[automatically_derived]
+        impl<T: ::core::clone::Clone, x: ::core::clone::Clone> ::core::clone::Clone
+        for array_agg<T, x> {
+            #[inline]
+            fn clone(&self) -> array_agg<T, x> {
+                array_agg {
+                    x: ::core::clone::Clone::clone(&self.x),
+                    T: ::core::clone::Clone::clone(&self.T),
+                }
+            }
+        }
+        #[automatically_derived]
+        impl<T: ::core::marker::Copy, x: ::core::marker::Copy> ::core::marker::Copy
+        for array_agg<T, x> {}
+        const _: () = {
+            use diesel;
+            #[allow(non_camel_case_types)]
+            impl<
+                T: diesel::query_builder::QueryId,
+                x: diesel::query_builder::QueryId,
+            > diesel::query_builder::QueryId for array_agg<T, x> {
+                type QueryId = array_agg<
+                    <T as diesel::query_builder::QueryId>::QueryId,
+                    <x as diesel::query_builder::QueryId>::QueryId,
+                >;
+                const HAS_STATIC_QUERY_ID: bool = <T as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <x as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && true;
+                const IS_WINDOW_FUNCTION: bool = <T as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <x as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || false;
+            }
+        };
+        ///The return type of [`array_agg()`](super::fn_name)
+        pub type HelperType<T, x> = array_agg<T, <x as AsExpression<T>>::Expression>;
+        impl<T: SingleValue, x> Expression for array_agg<T, x>
+        where
+            (x): Expression,
+        {
+            type SqlType = Array<T>;
+        }
+        impl<T: SingleValue, x, __DieselInternal> SelectableExpression<__DieselInternal>
+        for array_agg<T, x>
+        where
+            x: SelectableExpression<__DieselInternal>,
+            Self: AppearsOnTable<__DieselInternal>,
+        {}
+        impl<T: SingleValue, x, __DieselInternal> AppearsOnTable<__DieselInternal>
+        for array_agg<T, x>
+        where
+            x: AppearsOnTable<__DieselInternal>,
+            Self: Expression,
+        {}
+        impl<T: SingleValue, x, __DieselInternal> FunctionFragment<__DieselInternal>
+        for array_agg<T, x>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            x: QueryFragment<__DieselInternal>,
+        {
+            const FUNCTION_NAME: &'static str = "ARRAY_AGG";
+            #[allow(unused_assignments)]
+            fn walk_arguments<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                let mut needs_comma = false;
+                if !self.x.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.x.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                Ok(())
+            }
+        }
+        impl<T: SingleValue, x, __DieselInternal> QueryFragment<__DieselInternal>
+        for array_agg<T, x>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            x: QueryFragment<__DieselInternal>,
+        {
+            fn walk_ast<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                out.push_sql(
+                    <Self as FunctionFragment<__DieselInternal>>::FUNCTION_NAME,
+                );
+                out.push_sql("(");
+                self.walk_arguments(out.reborrow())?;
+                out.push_sql(")");
+                Ok(())
+            }
+        }
+        impl<T: SingleValue, x, __DieselInternal> ValidGrouping<__DieselInternal>
+        for array_agg<T, x> {
+            type IsAggregate = diesel::expression::is_aggregate::Yes;
+        }
+        impl<T: SingleValue, x> IsAggregateFunction for array_agg<T, x> {}
+    }
+    #[allow(non_camel_case_types)]
+    pub fn array_remove<T: SingleValue, arr, value>(
+        arr: arr,
+        value: value,
+    ) -> array_remove<T, arr, value>
+    where
+        arr: diesel::expression::AsExpression<Nullable<Array<T>>>,
+        value: diesel::expression::AsExpression<T>,
+    {
+        array_remove_utils::array_remove {
+            arr: arr.as_expression(),
+            value: value.as_expression(),
+            T: ::std::marker::PhantomData,
+        }
+    }
+    #[allow(non_camel_case_types, non_snake_case)]
+    ///The return type of [`array_remove()`](super::fn_name)
+    pub type array_remove<T, arr, value> = array_remove_utils::array_remove<
+        T,
+        <arr as diesel::expression::AsExpression<Nullable<Array<T>>>>::Expression,
+        <value as diesel::expression::AsExpression<T>>::Expression,
+    >;
+    #[doc(hidden)]
+    #[allow(non_camel_case_types, non_snake_case, unused_imports)]
+    pub(crate) mod array_remove_utils {
+        use diesel::{self, QueryResult};
+        use diesel::expression::{
+            AsExpression, Expression, SelectableExpression, AppearsOnTable, ValidGrouping,
+        };
+        use diesel::query_builder::{QueryFragment, AstPass};
+        use diesel::sql_types::*;
+        use diesel::internal::sql_functions::*;
+        use super::*;
+        pub struct array_remove<T, arr, value> {
+            pub(super) arr: arr,
+            pub(super) value: value,
+            pub(super) T: ::std::marker::PhantomData<T>,
+        }
+        const _: () = {
+            use diesel;
+            use diesel::internal::derives::numeric_ops as ops;
+            use diesel::expression::{Expression, AsExpression};
+            use diesel::sql_types::ops::{Add, Sub, Mul, Div};
+            use diesel::sql_types::{SqlType, SingleValue};
+            impl<T, arr, value, __Rhs> ::std::ops::Add<__Rhs>
+            for array_remove<T, arr, value>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Add,
+                <<Self as Expression>::SqlType as Add>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Add>::Rhs>,
+            {
+                type Output = ops::Add<Self, __Rhs::Expression>;
+                fn add(self, rhs: __Rhs) -> Self::Output {
+                    ops::Add::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, arr, value, __Rhs> ::std::ops::Sub<__Rhs>
+            for array_remove<T, arr, value>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Sub,
+                <<Self as Expression>::SqlType as Sub>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Sub>::Rhs>,
+            {
+                type Output = ops::Sub<Self, __Rhs::Expression>;
+                fn sub(self, rhs: __Rhs) -> Self::Output {
+                    ops::Sub::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, arr, value, __Rhs> ::std::ops::Mul<__Rhs>
+            for array_remove<T, arr, value>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Mul,
+                <<Self as Expression>::SqlType as Mul>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Mul>::Rhs>,
+            {
+                type Output = ops::Mul<Self, __Rhs::Expression>;
+                fn mul(self, rhs: __Rhs) -> Self::Output {
+                    ops::Mul::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, arr, value, __Rhs> ::std::ops::Div<__Rhs>
+            for array_remove<T, arr, value>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Div,
+                <<Self as Expression>::SqlType as Div>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Div>::Rhs>,
+            {
+                type Output = ops::Div<Self, __Rhs::Expression>;
+                fn div(self, rhs: __Rhs) -> Self::Output {
+                    ops::Div::new(self, rhs.as_expression())
+                }
+            }
+        };
+        #[automatically_derived]
+        impl<
+            T: ::core::fmt::Debug,
+            arr: ::core::fmt::Debug,
+            value: ::core::fmt::Debug,
+        > ::core::fmt::Debug for array_remove<T, arr, value> {
+            #[inline]
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::debug_struct_field3_finish(
+                    f,
+                    "array_remove",
+                    "arr",
+                    &self.arr,
+                    "value",
+                    &self.value,
+                    "T",
+                    &&self.T,
+                )
+            }
+        }
+        #[automatically_derived]
+        impl<
+            T: ::core::clone::Clone,
+            arr: ::core::clone::Clone,
+            value: ::core::clone::Clone,
+        > ::core::clone::Clone for array_remove<T, arr, value> {
+            #[inline]
+            fn clone(&self) -> array_remove<T, arr, value> {
+                array_remove {
+                    arr: ::core::clone::Clone::clone(&self.arr),
+                    value: ::core::clone::Clone::clone(&self.value),
+                    T: ::core::clone::Clone::clone(&self.T),
+                }
+            }
+        }
+        #[automatically_derived]
+        impl<
+            T: ::core::marker::Copy,
+            arr: ::core::marker::Copy,
+            value: ::core::marker::Copy,
+        > ::core::marker::Copy for array_remove<T, arr, value> {}
+        const _: () = {
+            use diesel;
+            #[allow(non_camel_case_types)]
+            impl<
+                T: diesel::query_builder::QueryId,
+                arr: diesel::query_builder::QueryId,
+                value: diesel::query_builder::QueryId,
+            > diesel::query_builder::QueryId for array_remove<T, arr, value> {
+                type QueryId = array_remove<
+                    <T as diesel::query_builder::QueryId>::QueryId,
+                    <arr as diesel::query_builder::QueryId>::QueryId,
+                    <value as diesel::query_builder::QueryId>::QueryId,
+                >;
+                const HAS_STATIC_QUERY_ID: bool = <T as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <arr as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <value as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && true;
+                const IS_WINDOW_FUNCTION: bool = <T as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <arr as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <value as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || false;
+            }
+        };
+        ///The return type of [`array_remove()`](super::fn_name)
+        pub type HelperType<T, arr, value> = array_remove<
+            T,
+            <arr as AsExpression<Nullable<Array<T>>>>::Expression,
+            <value as AsExpression<T>>::Expression,
+        >;
+        impl<T: SingleValue, arr, value> Expression for array_remove<T, arr, value>
+        where
+            (arr, value): Expression,
+        {
+            type SqlType = Nullable<Array<T>>;
+        }
+        impl<
+            T: SingleValue,
+            arr,
+            value,
+            __DieselInternal,
+        > SelectableExpression<__DieselInternal> for array_remove<T, arr, value>
+        where
+            arr: SelectableExpression<__DieselInternal>,
+            value: SelectableExpression<__DieselInternal>,
+            Self: AppearsOnTable<__DieselInternal>,
+        {}
+        impl<
+            T: SingleValue,
+            arr,
+            value,
+            __DieselInternal,
+        > AppearsOnTable<__DieselInternal> for array_remove<T, arr, value>
+        where
+            arr: AppearsOnTable<__DieselInternal>,
+            value: AppearsOnTable<__DieselInternal>,
+            Self: Expression,
+        {}
+        impl<
+            T: SingleValue,
+            arr,
+            value,
+            __DieselInternal,
+        > FunctionFragment<__DieselInternal> for array_remove<T, arr, value>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            arr: QueryFragment<__DieselInternal>,
+            value: QueryFragment<__DieselInternal>,
+        {
+            const FUNCTION_NAME: &'static str = "ARRAY_REMOVE";
+            #[allow(unused_assignments)]
+            fn walk_arguments<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                let mut needs_comma = false;
+                if !self.arr.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.arr.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                if !self.value.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.value.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                Ok(())
+            }
+        }
+        impl<
+            T: SingleValue,
+            arr,
+            value,
+            __DieselInternal,
+        > QueryFragment<__DieselInternal> for array_remove<T, arr, value>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            arr: QueryFragment<__DieselInternal>,
+            value: QueryFragment<__DieselInternal>,
+        {
+            fn walk_ast<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                out.push_sql(
+                    <Self as FunctionFragment<__DieselInternal>>::FUNCTION_NAME,
+                );
+                out.push_sql("(");
+                self.walk_arguments(out.reborrow())?;
+                out.push_sql(")");
+                Ok(())
+            }
+        }
+        pub struct __Derived<arr, value>(arr, value);
+        const _: () = {
+            use diesel;
+            impl<
+                arr,
+                value,
+                __GroupByClause,
+            > diesel::expression::ValidGrouping<__GroupByClause>
+            for __Derived<arr, value>
+            where
+                arr: diesel::expression::ValidGrouping<__GroupByClause>,
+                value: diesel::expression::ValidGrouping<__GroupByClause>,
+                <arr as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate: diesel::expression::MixedAggregates<
+                    <value as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >,
+            {
+                type IsAggregate = <<arr as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate as diesel::expression::MixedAggregates<
+                    <value as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >>::Output;
+            }
+        };
+        impl<
+            T: SingleValue,
+            arr,
+            value,
+            __DieselInternal,
+        > ValidGrouping<__DieselInternal> for array_remove<T, arr, value>
+        where
+            __Derived<arr, value>: ValidGrouping<__DieselInternal>,
+        {
+            type IsAggregate = <__Derived<
+                arr,
+                value,
+            > as ValidGrouping<__DieselInternal>>::IsAggregate;
+        }
+    }
+    /// Custom function only made available in search service database by CREATE FUNCTION array_deduplicate...
+    #[allow(non_camel_case_types)]
+    pub fn array_deduplicate<T: SingleValue, arr>(arr: arr) -> array_deduplicate<T, arr>
+    where
+        arr: diesel::expression::AsExpression<Nullable<Array<T>>>,
+    {
+        array_deduplicate_utils::array_deduplicate {
+            arr: arr.as_expression(),
+            T: ::std::marker::PhantomData,
+        }
+    }
+    #[allow(non_camel_case_types, non_snake_case)]
+    ///The return type of [`array_deduplicate()`](super::fn_name)
+    pub type array_deduplicate<T, arr> = array_deduplicate_utils::array_deduplicate<
+        T,
+        <arr as diesel::expression::AsExpression<Nullable<Array<T>>>>::Expression,
+    >;
+    #[doc(hidden)]
+    #[allow(non_camel_case_types, non_snake_case, unused_imports)]
+    pub(crate) mod array_deduplicate_utils {
+        use diesel::{self, QueryResult};
+        use diesel::expression::{
+            AsExpression, Expression, SelectableExpression, AppearsOnTable, ValidGrouping,
+        };
+        use diesel::query_builder::{QueryFragment, AstPass};
+        use diesel::sql_types::*;
+        use diesel::internal::sql_functions::*;
+        use super::*;
+        pub struct array_deduplicate<T, arr> {
+            pub(super) arr: arr,
+            pub(super) T: ::std::marker::PhantomData<T>,
+        }
+        const _: () = {
+            use diesel;
+            use diesel::internal::derives::numeric_ops as ops;
+            use diesel::expression::{Expression, AsExpression};
+            use diesel::sql_types::ops::{Add, Sub, Mul, Div};
+            use diesel::sql_types::{SqlType, SingleValue};
+            impl<T, arr, __Rhs> ::std::ops::Add<__Rhs> for array_deduplicate<T, arr>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Add,
+                <<Self as Expression>::SqlType as Add>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Add>::Rhs>,
+            {
+                type Output = ops::Add<Self, __Rhs::Expression>;
+                fn add(self, rhs: __Rhs) -> Self::Output {
+                    ops::Add::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, arr, __Rhs> ::std::ops::Sub<__Rhs> for array_deduplicate<T, arr>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Sub,
+                <<Self as Expression>::SqlType as Sub>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Sub>::Rhs>,
+            {
+                type Output = ops::Sub<Self, __Rhs::Expression>;
+                fn sub(self, rhs: __Rhs) -> Self::Output {
+                    ops::Sub::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, arr, __Rhs> ::std::ops::Mul<__Rhs> for array_deduplicate<T, arr>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Mul,
+                <<Self as Expression>::SqlType as Mul>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Mul>::Rhs>,
+            {
+                type Output = ops::Mul<Self, __Rhs::Expression>;
+                fn mul(self, rhs: __Rhs) -> Self::Output {
+                    ops::Mul::new(self, rhs.as_expression())
+                }
+            }
+            impl<T, arr, __Rhs> ::std::ops::Div<__Rhs> for array_deduplicate<T, arr>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Div,
+                <<Self as Expression>::SqlType as Div>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Div>::Rhs>,
+            {
+                type Output = ops::Div<Self, __Rhs::Expression>;
+                fn div(self, rhs: __Rhs) -> Self::Output {
+                    ops::Div::new(self, rhs.as_expression())
+                }
+            }
+        };
+        #[automatically_derived]
+        impl<T: ::core::fmt::Debug, arr: ::core::fmt::Debug> ::core::fmt::Debug
+        for array_deduplicate<T, arr> {
+            #[inline]
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::debug_struct_field2_finish(
+                    f,
+                    "array_deduplicate",
+                    "arr",
+                    &self.arr,
+                    "T",
+                    &&self.T,
+                )
+            }
+        }
+        #[automatically_derived]
+        impl<T: ::core::clone::Clone, arr: ::core::clone::Clone> ::core::clone::Clone
+        for array_deduplicate<T, arr> {
+            #[inline]
+            fn clone(&self) -> array_deduplicate<T, arr> {
+                array_deduplicate {
+                    arr: ::core::clone::Clone::clone(&self.arr),
+                    T: ::core::clone::Clone::clone(&self.T),
+                }
+            }
+        }
+        #[automatically_derived]
+        impl<T: ::core::marker::Copy, arr: ::core::marker::Copy> ::core::marker::Copy
+        for array_deduplicate<T, arr> {}
+        const _: () = {
+            use diesel;
+            #[allow(non_camel_case_types)]
+            impl<
+                T: diesel::query_builder::QueryId,
+                arr: diesel::query_builder::QueryId,
+            > diesel::query_builder::QueryId for array_deduplicate<T, arr> {
+                type QueryId = array_deduplicate<
+                    <T as diesel::query_builder::QueryId>::QueryId,
+                    <arr as diesel::query_builder::QueryId>::QueryId,
+                >;
+                const HAS_STATIC_QUERY_ID: bool = <T as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <arr as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && true;
+                const IS_WINDOW_FUNCTION: bool = <T as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <arr as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || false;
+            }
+        };
+        ///The return type of [`array_deduplicate()`](super::fn_name)
+        pub type HelperType<T, arr> = array_deduplicate<
+            T,
+            <arr as AsExpression<Nullable<Array<T>>>>::Expression,
+        >;
+        impl<T: SingleValue, arr> Expression for array_deduplicate<T, arr>
+        where
+            (arr): Expression,
+        {
+            type SqlType = Nullable<Array<T>>;
+        }
+        impl<
+            T: SingleValue,
+            arr,
+            __DieselInternal,
+        > SelectableExpression<__DieselInternal> for array_deduplicate<T, arr>
+        where
+            arr: SelectableExpression<__DieselInternal>,
+            Self: AppearsOnTable<__DieselInternal>,
+        {}
+        impl<T: SingleValue, arr, __DieselInternal> AppearsOnTable<__DieselInternal>
+        for array_deduplicate<T, arr>
+        where
+            arr: AppearsOnTable<__DieselInternal>,
+            Self: Expression,
+        {}
+        impl<T: SingleValue, arr, __DieselInternal> FunctionFragment<__DieselInternal>
+        for array_deduplicate<T, arr>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            arr: QueryFragment<__DieselInternal>,
+        {
+            const FUNCTION_NAME: &'static str = "array_deduplicate";
+            #[allow(unused_assignments)]
+            fn walk_arguments<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                let mut needs_comma = false;
+                if !self.arr.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.arr.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                Ok(())
+            }
+        }
+        impl<T: SingleValue, arr, __DieselInternal> QueryFragment<__DieselInternal>
+        for array_deduplicate<T, arr>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            arr: QueryFragment<__DieselInternal>,
+        {
+            fn walk_ast<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                out.push_sql(
+                    <Self as FunctionFragment<__DieselInternal>>::FUNCTION_NAME,
+                );
+                out.push_sql("(");
+                self.walk_arguments(out.reborrow())?;
+                out.push_sql(")");
+                Ok(())
+            }
+        }
+        pub struct __Derived<arr>(arr);
+        const _: () = {
+            use diesel;
+            impl<arr, __GroupByClause> diesel::expression::ValidGrouping<__GroupByClause>
+            for __Derived<arr>
+            where
+                arr: diesel::expression::ValidGrouping<__GroupByClause>,
+            {
+                type IsAggregate = <arr as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate;
+            }
+        };
+        impl<T: SingleValue, arr, __DieselInternal> ValidGrouping<__DieselInternal>
+        for array_deduplicate<T, arr>
+        where
+            __Derived<arr>: ValidGrouping<__DieselInternal>,
+        {
+            type IsAggregate = <__Derived<
+                arr,
+            > as ValidGrouping<__DieselInternal>>::IsAggregate;
+        }
+    }
+    /// Custom function only made available in search service database by CREATE EXTENSION unaccent;
+    #[allow(non_camel_case_types)]
+    pub fn unaccent<dict, text>(dict: dict, text: text) -> unaccent<dict, text>
+    where
+        dict: diesel::expression::AsExpression<Text>,
+        text: diesel::expression::AsExpression<Text>,
+    {
+        unaccent_utils::unaccent {
+            dict: dict.as_expression(),
+            text: text.as_expression(),
+        }
+    }
+    #[allow(non_camel_case_types, non_snake_case)]
+    ///The return type of [`unaccent()`](super::fn_name)
+    pub type unaccent<dict, text> = unaccent_utils::unaccent<
+        <dict as diesel::expression::AsExpression<Text>>::Expression,
+        <text as diesel::expression::AsExpression<Text>>::Expression,
+    >;
+    #[doc(hidden)]
+    #[allow(non_camel_case_types, non_snake_case, unused_imports)]
+    pub(crate) mod unaccent_utils {
+        use diesel::{self, QueryResult};
+        use diesel::expression::{
+            AsExpression, Expression, SelectableExpression, AppearsOnTable, ValidGrouping,
+        };
+        use diesel::query_builder::{QueryFragment, AstPass};
+        use diesel::sql_types::*;
+        use diesel::internal::sql_functions::*;
+        use super::*;
+        pub struct unaccent<dict, text> {
+            pub(super) dict: dict,
+            pub(super) text: text,
+        }
+        const _: () = {
+            use diesel;
+            use diesel::internal::derives::numeric_ops as ops;
+            use diesel::expression::{Expression, AsExpression};
+            use diesel::sql_types::ops::{Add, Sub, Mul, Div};
+            use diesel::sql_types::{SqlType, SingleValue};
+            impl<dict, text, __Rhs> ::std::ops::Add<__Rhs> for unaccent<dict, text>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Add,
+                <<Self as Expression>::SqlType as Add>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Add>::Rhs>,
+            {
+                type Output = ops::Add<Self, __Rhs::Expression>;
+                fn add(self, rhs: __Rhs) -> Self::Output {
+                    ops::Add::new(self, rhs.as_expression())
+                }
+            }
+            impl<dict, text, __Rhs> ::std::ops::Sub<__Rhs> for unaccent<dict, text>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Sub,
+                <<Self as Expression>::SqlType as Sub>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Sub>::Rhs>,
+            {
+                type Output = ops::Sub<Self, __Rhs::Expression>;
+                fn sub(self, rhs: __Rhs) -> Self::Output {
+                    ops::Sub::new(self, rhs.as_expression())
+                }
+            }
+            impl<dict, text, __Rhs> ::std::ops::Mul<__Rhs> for unaccent<dict, text>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Mul,
+                <<Self as Expression>::SqlType as Mul>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Mul>::Rhs>,
+            {
+                type Output = ops::Mul<Self, __Rhs::Expression>;
+                fn mul(self, rhs: __Rhs) -> Self::Output {
+                    ops::Mul::new(self, rhs.as_expression())
+                }
+            }
+            impl<dict, text, __Rhs> ::std::ops::Div<__Rhs> for unaccent<dict, text>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Div,
+                <<Self as Expression>::SqlType as Div>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Div>::Rhs>,
+            {
+                type Output = ops::Div<Self, __Rhs::Expression>;
+                fn div(self, rhs: __Rhs) -> Self::Output {
+                    ops::Div::new(self, rhs.as_expression())
+                }
+            }
+        };
+        #[automatically_derived]
+        impl<dict: ::core::fmt::Debug, text: ::core::fmt::Debug> ::core::fmt::Debug
+        for unaccent<dict, text> {
+            #[inline]
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::debug_struct_field2_finish(
+                    f,
+                    "unaccent",
+                    "dict",
+                    &self.dict,
+                    "text",
+                    &&self.text,
+                )
+            }
+        }
+        #[automatically_derived]
+        impl<dict: ::core::clone::Clone, text: ::core::clone::Clone> ::core::clone::Clone
+        for unaccent<dict, text> {
+            #[inline]
+            fn clone(&self) -> unaccent<dict, text> {
+                unaccent {
+                    dict: ::core::clone::Clone::clone(&self.dict),
+                    text: ::core::clone::Clone::clone(&self.text),
+                }
+            }
+        }
+        #[automatically_derived]
+        impl<dict: ::core::marker::Copy, text: ::core::marker::Copy> ::core::marker::Copy
+        for unaccent<dict, text> {}
+        const _: () = {
+            use diesel;
+            #[allow(non_camel_case_types)]
+            impl<
+                dict: diesel::query_builder::QueryId,
+                text: diesel::query_builder::QueryId,
+            > diesel::query_builder::QueryId for unaccent<dict, text> {
+                type QueryId = unaccent<
+                    <dict as diesel::query_builder::QueryId>::QueryId,
+                    <text as diesel::query_builder::QueryId>::QueryId,
+                >;
+                const HAS_STATIC_QUERY_ID: bool = <dict as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <text as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && true;
+                const IS_WINDOW_FUNCTION: bool = <dict as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <text as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || false;
+            }
+        };
+        ///The return type of [`unaccent()`](super::fn_name)
+        pub type HelperType<dict, text> = unaccent<
+            <dict as AsExpression<Text>>::Expression,
+            <text as AsExpression<Text>>::Expression,
+        >;
+        impl<dict, text> Expression for unaccent<dict, text>
+        where
+            (dict, text): Expression,
+        {
+            type SqlType = Text;
+        }
+        impl<dict, text, __DieselInternal> SelectableExpression<__DieselInternal>
+        for unaccent<dict, text>
+        where
+            dict: SelectableExpression<__DieselInternal>,
+            text: SelectableExpression<__DieselInternal>,
+            Self: AppearsOnTable<__DieselInternal>,
+        {}
+        impl<dict, text, __DieselInternal> AppearsOnTable<__DieselInternal>
+        for unaccent<dict, text>
+        where
+            dict: AppearsOnTable<__DieselInternal>,
+            text: AppearsOnTable<__DieselInternal>,
+            Self: Expression,
+        {}
+        impl<dict, text, __DieselInternal> FunctionFragment<__DieselInternal>
+        for unaccent<dict, text>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            dict: QueryFragment<__DieselInternal>,
+            text: QueryFragment<__DieselInternal>,
+        {
+            const FUNCTION_NAME: &'static str = "unaccent";
+            #[allow(unused_assignments)]
+            fn walk_arguments<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                let mut needs_comma = false;
+                if !self.dict.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.dict.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                if !self.text.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.text.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                Ok(())
+            }
+        }
+        impl<dict, text, __DieselInternal> QueryFragment<__DieselInternal>
+        for unaccent<dict, text>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            dict: QueryFragment<__DieselInternal>,
+            text: QueryFragment<__DieselInternal>,
+        {
+            fn walk_ast<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                out.push_sql(
+                    <Self as FunctionFragment<__DieselInternal>>::FUNCTION_NAME,
+                );
+                out.push_sql("(");
+                self.walk_arguments(out.reborrow())?;
+                out.push_sql(")");
+                Ok(())
+            }
+        }
+        pub struct __Derived<dict, text>(dict, text);
+        const _: () = {
+            use diesel;
+            impl<
+                dict,
+                text,
+                __GroupByClause,
+            > diesel::expression::ValidGrouping<__GroupByClause>
+            for __Derived<dict, text>
+            where
+                dict: diesel::expression::ValidGrouping<__GroupByClause>,
+                text: diesel::expression::ValidGrouping<__GroupByClause>,
+                <dict as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate: diesel::expression::MixedAggregates<
+                    <text as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >,
+            {
+                type IsAggregate = <<dict as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate as diesel::expression::MixedAggregates<
+                    <text as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >>::Output;
+            }
+        };
+        impl<dict, text, __DieselInternal> ValidGrouping<__DieselInternal>
+        for unaccent<dict, text>
+        where
+            __Derived<dict, text>: ValidGrouping<__DieselInternal>,
+        {
+            type IsAggregate = <__Derived<
+                dict,
+                text,
+            > as ValidGrouping<__DieselInternal>>::IsAggregate;
+        }
+    }
+    /// PostGIS's ST_Distance function that returns distance in meters (f64 in Rust)
+    #[allow(non_camel_case_types)]
+    pub fn st_distance_inner<geom_a, geom_b>(
+        geom_a: geom_a,
+        geom_b: geom_b,
+    ) -> st_distance_inner<geom_a, geom_b>
+    where
+        geom_a: diesel::expression::AsExpression<Geography>,
+        geom_b: diesel::expression::AsExpression<Geography>,
+    {
+        st_distance_inner_utils::st_distance_inner {
+            geom_a: geom_a.as_expression(),
+            geom_b: geom_b.as_expression(),
+        }
+    }
+    #[allow(non_camel_case_types, non_snake_case)]
+    ///The return type of [`st_distance_inner()`](super::fn_name)
+    pub type st_distance_inner<geom_a, geom_b> = st_distance_inner_utils::st_distance_inner<
+        <geom_a as diesel::expression::AsExpression<Geography>>::Expression,
+        <geom_b as diesel::expression::AsExpression<Geography>>::Expression,
+    >;
+    #[doc(hidden)]
+    #[allow(non_camel_case_types, non_snake_case, unused_imports)]
+    pub(crate) mod st_distance_inner_utils {
+        use diesel::{self, QueryResult};
+        use diesel::expression::{
+            AsExpression, Expression, SelectableExpression, AppearsOnTable, ValidGrouping,
+        };
+        use diesel::query_builder::{QueryFragment, AstPass};
+        use diesel::sql_types::*;
+        use diesel::internal::sql_functions::*;
+        use super::*;
+        pub struct st_distance_inner<geom_a, geom_b> {
+            pub(super) geom_a: geom_a,
+            pub(super) geom_b: geom_b,
+        }
+        const _: () = {
+            use diesel;
+            use diesel::internal::derives::numeric_ops as ops;
+            use diesel::expression::{Expression, AsExpression};
+            use diesel::sql_types::ops::{Add, Sub, Mul, Div};
+            use diesel::sql_types::{SqlType, SingleValue};
+            impl<geom_a, geom_b, __Rhs> ::std::ops::Add<__Rhs>
+            for st_distance_inner<geom_a, geom_b>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Add,
+                <<Self as Expression>::SqlType as Add>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Add>::Rhs>,
+            {
+                type Output = ops::Add<Self, __Rhs::Expression>;
+                fn add(self, rhs: __Rhs) -> Self::Output {
+                    ops::Add::new(self, rhs.as_expression())
+                }
+            }
+            impl<geom_a, geom_b, __Rhs> ::std::ops::Sub<__Rhs>
+            for st_distance_inner<geom_a, geom_b>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Sub,
+                <<Self as Expression>::SqlType as Sub>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Sub>::Rhs>,
+            {
+                type Output = ops::Sub<Self, __Rhs::Expression>;
+                fn sub(self, rhs: __Rhs) -> Self::Output {
+                    ops::Sub::new(self, rhs.as_expression())
+                }
+            }
+            impl<geom_a, geom_b, __Rhs> ::std::ops::Mul<__Rhs>
+            for st_distance_inner<geom_a, geom_b>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Mul,
+                <<Self as Expression>::SqlType as Mul>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Mul>::Rhs>,
+            {
+                type Output = ops::Mul<Self, __Rhs::Expression>;
+                fn mul(self, rhs: __Rhs) -> Self::Output {
+                    ops::Mul::new(self, rhs.as_expression())
+                }
+            }
+            impl<geom_a, geom_b, __Rhs> ::std::ops::Div<__Rhs>
+            for st_distance_inner<geom_a, geom_b>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Div,
+                <<Self as Expression>::SqlType as Div>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Div>::Rhs>,
+            {
+                type Output = ops::Div<Self, __Rhs::Expression>;
+                fn div(self, rhs: __Rhs) -> Self::Output {
+                    ops::Div::new(self, rhs.as_expression())
+                }
+            }
+        };
+        #[automatically_derived]
+        impl<geom_a: ::core::fmt::Debug, geom_b: ::core::fmt::Debug> ::core::fmt::Debug
+        for st_distance_inner<geom_a, geom_b> {
+            #[inline]
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::debug_struct_field2_finish(
+                    f,
+                    "st_distance_inner",
+                    "geom_a",
+                    &self.geom_a,
+                    "geom_b",
+                    &&self.geom_b,
+                )
+            }
+        }
+        #[automatically_derived]
+        impl<
+            geom_a: ::core::clone::Clone,
+            geom_b: ::core::clone::Clone,
+        > ::core::clone::Clone for st_distance_inner<geom_a, geom_b> {
+            #[inline]
+            fn clone(&self) -> st_distance_inner<geom_a, geom_b> {
+                st_distance_inner {
+                    geom_a: ::core::clone::Clone::clone(&self.geom_a),
+                    geom_b: ::core::clone::Clone::clone(&self.geom_b),
+                }
+            }
+        }
+        #[automatically_derived]
+        impl<
+            geom_a: ::core::marker::Copy,
+            geom_b: ::core::marker::Copy,
+        > ::core::marker::Copy for st_distance_inner<geom_a, geom_b> {}
+        const _: () = {
+            use diesel;
+            #[allow(non_camel_case_types)]
+            impl<
+                geom_a: diesel::query_builder::QueryId,
+                geom_b: diesel::query_builder::QueryId,
+            > diesel::query_builder::QueryId for st_distance_inner<geom_a, geom_b> {
+                type QueryId = st_distance_inner<
+                    <geom_a as diesel::query_builder::QueryId>::QueryId,
+                    <geom_b as diesel::query_builder::QueryId>::QueryId,
+                >;
+                const HAS_STATIC_QUERY_ID: bool = <geom_a as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <geom_b as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && true;
+                const IS_WINDOW_FUNCTION: bool = <geom_a as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <geom_b as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || false;
+            }
+        };
+        ///The return type of [`st_distance_inner()`](super::fn_name)
+        pub type HelperType<geom_a, geom_b> = st_distance_inner<
+            <geom_a as AsExpression<Geography>>::Expression,
+            <geom_b as AsExpression<Geography>>::Expression,
+        >;
+        impl<geom_a, geom_b> Expression for st_distance_inner<geom_a, geom_b>
+        where
+            (geom_a, geom_b): Expression,
+        {
+            type SqlType = Float8;
+        }
+        impl<geom_a, geom_b, __DieselInternal> SelectableExpression<__DieselInternal>
+        for st_distance_inner<geom_a, geom_b>
+        where
+            geom_a: SelectableExpression<__DieselInternal>,
+            geom_b: SelectableExpression<__DieselInternal>,
+            Self: AppearsOnTable<__DieselInternal>,
+        {}
+        impl<geom_a, geom_b, __DieselInternal> AppearsOnTable<__DieselInternal>
+        for st_distance_inner<geom_a, geom_b>
+        where
+            geom_a: AppearsOnTable<__DieselInternal>,
+            geom_b: AppearsOnTable<__DieselInternal>,
+            Self: Expression,
+        {}
+        impl<geom_a, geom_b, __DieselInternal> FunctionFragment<__DieselInternal>
+        for st_distance_inner<geom_a, geom_b>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            geom_a: QueryFragment<__DieselInternal>,
+            geom_b: QueryFragment<__DieselInternal>,
+        {
+            const FUNCTION_NAME: &'static str = "ST_Distance";
+            #[allow(unused_assignments)]
+            fn walk_arguments<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                let mut needs_comma = false;
+                if !self.geom_a.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.geom_a.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                if !self.geom_b.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.geom_b.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                Ok(())
+            }
+        }
+        impl<geom_a, geom_b, __DieselInternal> QueryFragment<__DieselInternal>
+        for st_distance_inner<geom_a, geom_b>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            geom_a: QueryFragment<__DieselInternal>,
+            geom_b: QueryFragment<__DieselInternal>,
+        {
+            fn walk_ast<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                out.push_sql(
+                    <Self as FunctionFragment<__DieselInternal>>::FUNCTION_NAME,
+                );
+                out.push_sql("(");
+                self.walk_arguments(out.reborrow())?;
+                out.push_sql(")");
+                Ok(())
+            }
+        }
+        pub struct __Derived<geom_a, geom_b>(geom_a, geom_b);
+        const _: () = {
+            use diesel;
+            impl<
+                geom_a,
+                geom_b,
+                __GroupByClause,
+            > diesel::expression::ValidGrouping<__GroupByClause>
+            for __Derived<geom_a, geom_b>
+            where
+                geom_a: diesel::expression::ValidGrouping<__GroupByClause>,
+                geom_b: diesel::expression::ValidGrouping<__GroupByClause>,
+                <geom_a as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate: diesel::expression::MixedAggregates<
+                    <geom_b as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >,
+            {
+                type IsAggregate = <<geom_a as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate as diesel::expression::MixedAggregates<
+                    <geom_b as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >>::Output;
+            }
+        };
+        impl<geom_a, geom_b, __DieselInternal> ValidGrouping<__DieselInternal>
+        for st_distance_inner<geom_a, geom_b>
+        where
+            __Derived<geom_a, geom_b>: ValidGrouping<__DieselInternal>,
+        {
+            type IsAggregate = <__Derived<
+                geom_a,
+                geom_b,
+            > as ValidGrouping<__DieselInternal>>::IsAggregate;
+        }
+    }
+    /// PostGIS's ST_DWithin that determines if two geometries or geographies are within a specified distance in meters
+    #[allow(non_camel_case_types)]
+    pub fn st_dwithin_inner<geom_a, geom_b, radius>(
+        geom_a: geom_a,
+        geom_b: geom_b,
+        radius: radius,
+    ) -> st_dwithin_inner<geom_a, geom_b, radius>
+    where
+        geom_a: diesel::expression::AsExpression<Geography>,
+        geom_b: diesel::expression::AsExpression<Geography>,
+        radius: diesel::expression::AsExpression<Float8>,
+    {
+        st_dwithin_inner_utils::st_dwithin_inner {
+            geom_a: geom_a.as_expression(),
+            geom_b: geom_b.as_expression(),
+            radius: radius.as_expression(),
+        }
+    }
+    #[allow(non_camel_case_types, non_snake_case)]
+    ///The return type of [`st_dwithin_inner()`](super::fn_name)
+    pub type st_dwithin_inner<geom_a, geom_b, radius> = st_dwithin_inner_utils::st_dwithin_inner<
+        <geom_a as diesel::expression::AsExpression<Geography>>::Expression,
+        <geom_b as diesel::expression::AsExpression<Geography>>::Expression,
+        <radius as diesel::expression::AsExpression<Float8>>::Expression,
+    >;
+    #[doc(hidden)]
+    #[allow(non_camel_case_types, non_snake_case, unused_imports)]
+    pub(crate) mod st_dwithin_inner_utils {
+        use diesel::{self, QueryResult};
+        use diesel::expression::{
+            AsExpression, Expression, SelectableExpression, AppearsOnTable, ValidGrouping,
+        };
+        use diesel::query_builder::{QueryFragment, AstPass};
+        use diesel::sql_types::*;
+        use diesel::internal::sql_functions::*;
+        use super::*;
+        pub struct st_dwithin_inner<geom_a, geom_b, radius> {
+            pub(super) geom_a: geom_a,
+            pub(super) geom_b: geom_b,
+            pub(super) radius: radius,
+        }
+        const _: () = {
+            use diesel;
+            use diesel::internal::derives::numeric_ops as ops;
+            use diesel::expression::{Expression, AsExpression};
+            use diesel::sql_types::ops::{Add, Sub, Mul, Div};
+            use diesel::sql_types::{SqlType, SingleValue};
+            impl<geom_a, geom_b, radius, __Rhs> ::std::ops::Add<__Rhs>
+            for st_dwithin_inner<geom_a, geom_b, radius>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Add,
+                <<Self as Expression>::SqlType as Add>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Add>::Rhs>,
+            {
+                type Output = ops::Add<Self, __Rhs::Expression>;
+                fn add(self, rhs: __Rhs) -> Self::Output {
+                    ops::Add::new(self, rhs.as_expression())
+                }
+            }
+            impl<geom_a, geom_b, radius, __Rhs> ::std::ops::Sub<__Rhs>
+            for st_dwithin_inner<geom_a, geom_b, radius>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Sub,
+                <<Self as Expression>::SqlType as Sub>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Sub>::Rhs>,
+            {
+                type Output = ops::Sub<Self, __Rhs::Expression>;
+                fn sub(self, rhs: __Rhs) -> Self::Output {
+                    ops::Sub::new(self, rhs.as_expression())
+                }
+            }
+            impl<geom_a, geom_b, radius, __Rhs> ::std::ops::Mul<__Rhs>
+            for st_dwithin_inner<geom_a, geom_b, radius>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Mul,
+                <<Self as Expression>::SqlType as Mul>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Mul>::Rhs>,
+            {
+                type Output = ops::Mul<Self, __Rhs::Expression>;
+                fn mul(self, rhs: __Rhs) -> Self::Output {
+                    ops::Mul::new(self, rhs.as_expression())
+                }
+            }
+            impl<geom_a, geom_b, radius, __Rhs> ::std::ops::Div<__Rhs>
+            for st_dwithin_inner<geom_a, geom_b, radius>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Div,
+                <<Self as Expression>::SqlType as Div>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Div>::Rhs>,
+            {
+                type Output = ops::Div<Self, __Rhs::Expression>;
+                fn div(self, rhs: __Rhs) -> Self::Output {
+                    ops::Div::new(self, rhs.as_expression())
+                }
+            }
+        };
+        #[automatically_derived]
+        impl<
+            geom_a: ::core::fmt::Debug,
+            geom_b: ::core::fmt::Debug,
+            radius: ::core::fmt::Debug,
+        > ::core::fmt::Debug for st_dwithin_inner<geom_a, geom_b, radius> {
+            #[inline]
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::debug_struct_field3_finish(
+                    f,
+                    "st_dwithin_inner",
+                    "geom_a",
+                    &self.geom_a,
+                    "geom_b",
+                    &self.geom_b,
+                    "radius",
+                    &&self.radius,
+                )
+            }
+        }
+        #[automatically_derived]
+        impl<
+            geom_a: ::core::clone::Clone,
+            geom_b: ::core::clone::Clone,
+            radius: ::core::clone::Clone,
+        > ::core::clone::Clone for st_dwithin_inner<geom_a, geom_b, radius> {
+            #[inline]
+            fn clone(&self) -> st_dwithin_inner<geom_a, geom_b, radius> {
+                st_dwithin_inner {
+                    geom_a: ::core::clone::Clone::clone(&self.geom_a),
+                    geom_b: ::core::clone::Clone::clone(&self.geom_b),
+                    radius: ::core::clone::Clone::clone(&self.radius),
+                }
+            }
+        }
+        #[automatically_derived]
+        impl<
+            geom_a: ::core::marker::Copy,
+            geom_b: ::core::marker::Copy,
+            radius: ::core::marker::Copy,
+        > ::core::marker::Copy for st_dwithin_inner<geom_a, geom_b, radius> {}
+        const _: () = {
+            use diesel;
+            #[allow(non_camel_case_types)]
+            impl<
+                geom_a: diesel::query_builder::QueryId,
+                geom_b: diesel::query_builder::QueryId,
+                radius: diesel::query_builder::QueryId,
+            > diesel::query_builder::QueryId
+            for st_dwithin_inner<geom_a, geom_b, radius> {
+                type QueryId = st_dwithin_inner<
+                    <geom_a as diesel::query_builder::QueryId>::QueryId,
+                    <geom_b as diesel::query_builder::QueryId>::QueryId,
+                    <radius as diesel::query_builder::QueryId>::QueryId,
+                >;
+                const HAS_STATIC_QUERY_ID: bool = <geom_a as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <geom_b as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <radius as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && true;
+                const IS_WINDOW_FUNCTION: bool = <geom_a as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <geom_b as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <radius as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || false;
+            }
+        };
+        ///The return type of [`st_dwithin_inner()`](super::fn_name)
+        pub type HelperType<geom_a, geom_b, radius> = st_dwithin_inner<
+            <geom_a as AsExpression<Geography>>::Expression,
+            <geom_b as AsExpression<Geography>>::Expression,
+            <radius as AsExpression<Float8>>::Expression,
+        >;
+        impl<geom_a, geom_b, radius> Expression
+        for st_dwithin_inner<geom_a, geom_b, radius>
+        where
+            (geom_a, geom_b, radius): Expression,
+        {
+            type SqlType = Bool;
+        }
+        impl<
+            geom_a,
+            geom_b,
+            radius,
+            __DieselInternal,
+        > SelectableExpression<__DieselInternal>
+        for st_dwithin_inner<geom_a, geom_b, radius>
+        where
+            geom_a: SelectableExpression<__DieselInternal>,
+            geom_b: SelectableExpression<__DieselInternal>,
+            radius: SelectableExpression<__DieselInternal>,
+            Self: AppearsOnTable<__DieselInternal>,
+        {}
+        impl<geom_a, geom_b, radius, __DieselInternal> AppearsOnTable<__DieselInternal>
+        for st_dwithin_inner<geom_a, geom_b, radius>
+        where
+            geom_a: AppearsOnTable<__DieselInternal>,
+            geom_b: AppearsOnTable<__DieselInternal>,
+            radius: AppearsOnTable<__DieselInternal>,
+            Self: Expression,
+        {}
+        impl<geom_a, geom_b, radius, __DieselInternal> FunctionFragment<__DieselInternal>
+        for st_dwithin_inner<geom_a, geom_b, radius>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            geom_a: QueryFragment<__DieselInternal>,
+            geom_b: QueryFragment<__DieselInternal>,
+            radius: QueryFragment<__DieselInternal>,
+        {
+            const FUNCTION_NAME: &'static str = "ST_DWithin";
+            #[allow(unused_assignments)]
+            fn walk_arguments<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                let mut needs_comma = false;
+                if !self.geom_a.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.geom_a.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                if !self.geom_b.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.geom_b.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                if !self.radius.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.radius.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                Ok(())
+            }
+        }
+        impl<geom_a, geom_b, radius, __DieselInternal> QueryFragment<__DieselInternal>
+        for st_dwithin_inner<geom_a, geom_b, radius>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            geom_a: QueryFragment<__DieselInternal>,
+            geom_b: QueryFragment<__DieselInternal>,
+            radius: QueryFragment<__DieselInternal>,
+        {
+            fn walk_ast<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                out.push_sql(
+                    <Self as FunctionFragment<__DieselInternal>>::FUNCTION_NAME,
+                );
+                out.push_sql("(");
+                self.walk_arguments(out.reborrow())?;
+                out.push_sql(")");
+                Ok(())
+            }
+        }
+        pub struct __Derived<geom_a, geom_b, radius>(geom_a, geom_b, radius);
+        const _: () = {
+            use diesel;
+            impl<
+                geom_a,
+                geom_b,
+                radius,
+                __GroupByClause,
+            > diesel::expression::ValidGrouping<__GroupByClause>
+            for __Derived<geom_a, geom_b, radius>
+            where
+                geom_a: diesel::expression::ValidGrouping<__GroupByClause>,
+                geom_b: diesel::expression::ValidGrouping<__GroupByClause>,
+                radius: diesel::expression::ValidGrouping<__GroupByClause>,
+                <geom_a as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate: diesel::expression::MixedAggregates<
+                    <geom_b as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >,
+                <<geom_a as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate as diesel::expression::MixedAggregates<
+                    <geom_b as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >>::Output: diesel::expression::MixedAggregates<
+                    <radius as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >,
+            {
+                type IsAggregate = <<<geom_a as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate as diesel::expression::MixedAggregates<
+                    <geom_b as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >>::Output as diesel::expression::MixedAggregates<
+                    <radius as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >>::Output;
+            }
+        };
+        impl<geom_a, geom_b, radius, __DieselInternal> ValidGrouping<__DieselInternal>
+        for st_dwithin_inner<geom_a, geom_b, radius>
+        where
+            __Derived<geom_a, geom_b, radius>: ValidGrouping<__DieselInternal>,
+        {
+            type IsAggregate = <__Derived<
+                geom_a,
+                geom_b,
+                radius,
+            > as ValidGrouping<__DieselInternal>>::IsAggregate;
+        }
+    }
+    /// PostGIS's ST_MakePoint that constructs a Geomgraphy object of type **POINT**
+    #[allow(non_camel_case_types)]
+    pub fn st_makepoint<lon, lat>(lon: lon, lat: lat) -> st_makepoint<lon, lat>
+    where
+        lon: diesel::expression::AsExpression<Float8>,
+        lat: diesel::expression::AsExpression<Float8>,
+    {
+        st_makepoint_utils::st_makepoint {
+            lon: lon.as_expression(),
+            lat: lat.as_expression(),
+        }
+    }
+    #[allow(non_camel_case_types, non_snake_case)]
+    ///The return type of [`st_makepoint()`](super::fn_name)
+    pub type st_makepoint<lon, lat> = st_makepoint_utils::st_makepoint<
+        <lon as diesel::expression::AsExpression<Float8>>::Expression,
+        <lat as diesel::expression::AsExpression<Float8>>::Expression,
+    >;
+    #[doc(hidden)]
+    #[allow(non_camel_case_types, non_snake_case, unused_imports)]
+    pub(crate) mod st_makepoint_utils {
+        use diesel::{self, QueryResult};
+        use diesel::expression::{
+            AsExpression, Expression, SelectableExpression, AppearsOnTable, ValidGrouping,
+        };
+        use diesel::query_builder::{QueryFragment, AstPass};
+        use diesel::sql_types::*;
+        use diesel::internal::sql_functions::*;
+        use super::*;
+        pub struct st_makepoint<lon, lat> {
+            pub(super) lon: lon,
+            pub(super) lat: lat,
+        }
+        const _: () = {
+            use diesel;
+            use diesel::internal::derives::numeric_ops as ops;
+            use diesel::expression::{Expression, AsExpression};
+            use diesel::sql_types::ops::{Add, Sub, Mul, Div};
+            use diesel::sql_types::{SqlType, SingleValue};
+            impl<lon, lat, __Rhs> ::std::ops::Add<__Rhs> for st_makepoint<lon, lat>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Add,
+                <<Self as Expression>::SqlType as Add>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Add>::Rhs>,
+            {
+                type Output = ops::Add<Self, __Rhs::Expression>;
+                fn add(self, rhs: __Rhs) -> Self::Output {
+                    ops::Add::new(self, rhs.as_expression())
+                }
+            }
+            impl<lon, lat, __Rhs> ::std::ops::Sub<__Rhs> for st_makepoint<lon, lat>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Sub,
+                <<Self as Expression>::SqlType as Sub>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Sub>::Rhs>,
+            {
+                type Output = ops::Sub<Self, __Rhs::Expression>;
+                fn sub(self, rhs: __Rhs) -> Self::Output {
+                    ops::Sub::new(self, rhs.as_expression())
+                }
+            }
+            impl<lon, lat, __Rhs> ::std::ops::Mul<__Rhs> for st_makepoint<lon, lat>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Mul,
+                <<Self as Expression>::SqlType as Mul>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Mul>::Rhs>,
+            {
+                type Output = ops::Mul<Self, __Rhs::Expression>;
+                fn mul(self, rhs: __Rhs) -> Self::Output {
+                    ops::Mul::new(self, rhs.as_expression())
+                }
+            }
+            impl<lon, lat, __Rhs> ::std::ops::Div<__Rhs> for st_makepoint<lon, lat>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Div,
+                <<Self as Expression>::SqlType as Div>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Div>::Rhs>,
+            {
+                type Output = ops::Div<Self, __Rhs::Expression>;
+                fn div(self, rhs: __Rhs) -> Self::Output {
+                    ops::Div::new(self, rhs.as_expression())
+                }
+            }
+        };
+        #[automatically_derived]
+        impl<lon: ::core::fmt::Debug, lat: ::core::fmt::Debug> ::core::fmt::Debug
+        for st_makepoint<lon, lat> {
+            #[inline]
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::debug_struct_field2_finish(
+                    f,
+                    "st_makepoint",
+                    "lon",
+                    &self.lon,
+                    "lat",
+                    &&self.lat,
+                )
+            }
+        }
+        #[automatically_derived]
+        impl<lon: ::core::clone::Clone, lat: ::core::clone::Clone> ::core::clone::Clone
+        for st_makepoint<lon, lat> {
+            #[inline]
+            fn clone(&self) -> st_makepoint<lon, lat> {
+                st_makepoint {
+                    lon: ::core::clone::Clone::clone(&self.lon),
+                    lat: ::core::clone::Clone::clone(&self.lat),
+                }
+            }
+        }
+        #[automatically_derived]
+        impl<lon: ::core::marker::Copy, lat: ::core::marker::Copy> ::core::marker::Copy
+        for st_makepoint<lon, lat> {}
+        const _: () = {
+            use diesel;
+            #[allow(non_camel_case_types)]
+            impl<
+                lon: diesel::query_builder::QueryId,
+                lat: diesel::query_builder::QueryId,
+            > diesel::query_builder::QueryId for st_makepoint<lon, lat> {
+                type QueryId = st_makepoint<
+                    <lon as diesel::query_builder::QueryId>::QueryId,
+                    <lat as diesel::query_builder::QueryId>::QueryId,
+                >;
+                const HAS_STATIC_QUERY_ID: bool = <lon as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <lat as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && true;
+                const IS_WINDOW_FUNCTION: bool = <lon as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <lat as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || false;
+            }
+        };
+        ///The return type of [`st_makepoint()`](super::fn_name)
+        pub type HelperType<lon, lat> = st_makepoint<
+            <lon as AsExpression<Float8>>::Expression,
+            <lat as AsExpression<Float8>>::Expression,
+        >;
+        impl<lon, lat> Expression for st_makepoint<lon, lat>
+        where
+            (lon, lat): Expression,
+        {
+            type SqlType = Geography;
+        }
+        impl<lon, lat, __DieselInternal> SelectableExpression<__DieselInternal>
+        for st_makepoint<lon, lat>
+        where
+            lon: SelectableExpression<__DieselInternal>,
+            lat: SelectableExpression<__DieselInternal>,
+            Self: AppearsOnTable<__DieselInternal>,
+        {}
+        impl<lon, lat, __DieselInternal> AppearsOnTable<__DieselInternal>
+        for st_makepoint<lon, lat>
+        where
+            lon: AppearsOnTable<__DieselInternal>,
+            lat: AppearsOnTable<__DieselInternal>,
+            Self: Expression,
+        {}
+        impl<lon, lat, __DieselInternal> FunctionFragment<__DieselInternal>
+        for st_makepoint<lon, lat>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            lon: QueryFragment<__DieselInternal>,
+            lat: QueryFragment<__DieselInternal>,
+        {
+            const FUNCTION_NAME: &'static str = "ST_MakePoint";
+            #[allow(unused_assignments)]
+            fn walk_arguments<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                let mut needs_comma = false;
+                if !self.lon.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.lon.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                if !self.lat.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.lat.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                Ok(())
+            }
+        }
+        impl<lon, lat, __DieselInternal> QueryFragment<__DieselInternal>
+        for st_makepoint<lon, lat>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            lon: QueryFragment<__DieselInternal>,
+            lat: QueryFragment<__DieselInternal>,
+        {
+            fn walk_ast<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                out.push_sql(
+                    <Self as FunctionFragment<__DieselInternal>>::FUNCTION_NAME,
+                );
+                out.push_sql("(");
+                self.walk_arguments(out.reborrow())?;
+                out.push_sql(")");
+                Ok(())
+            }
+        }
+        pub struct __Derived<lon, lat>(lon, lat);
+        const _: () = {
+            use diesel;
+            impl<
+                lon,
+                lat,
+                __GroupByClause,
+            > diesel::expression::ValidGrouping<__GroupByClause> for __Derived<lon, lat>
+            where
+                lon: diesel::expression::ValidGrouping<__GroupByClause>,
+                lat: diesel::expression::ValidGrouping<__GroupByClause>,
+                <lon as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate: diesel::expression::MixedAggregates<
+                    <lat as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >,
+            {
+                type IsAggregate = <<lon as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate as diesel::expression::MixedAggregates<
+                    <lat as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >>::Output;
+            }
+        };
+        impl<lon, lat, __DieselInternal> ValidGrouping<__DieselInternal>
+        for st_makepoint<lon, lat>
+        where
+            __Derived<lon, lat>: ValidGrouping<__DieselInternal>,
+        {
+            type IsAggregate = <__Derived<
+                lon,
+                lat,
+            > as ValidGrouping<__DieselInternal>>::IsAggregate;
+        }
+    }
+    /// PostGIS's ST_SetSRID that sets the Spatial Reference Identifier (SRID) for a given Geography object
+    #[allow(non_camel_case_types)]
+    pub fn st_setsrid<geom, srid>(geom: geom, srid: srid) -> st_setsrid<geom, srid>
+    where
+        geom: diesel::expression::AsExpression<Geography>,
+        srid: diesel::expression::AsExpression<Int4>,
+    {
+        st_setsrid_utils::st_setsrid {
+            geom: geom.as_expression(),
+            srid: srid.as_expression(),
+        }
+    }
+    #[allow(non_camel_case_types, non_snake_case)]
+    ///The return type of [`st_setsrid()`](super::fn_name)
+    pub type st_setsrid<geom, srid> = st_setsrid_utils::st_setsrid<
+        <geom as diesel::expression::AsExpression<Geography>>::Expression,
+        <srid as diesel::expression::AsExpression<Int4>>::Expression,
+    >;
+    #[doc(hidden)]
+    #[allow(non_camel_case_types, non_snake_case, unused_imports)]
+    pub(crate) mod st_setsrid_utils {
+        use diesel::{self, QueryResult};
+        use diesel::expression::{
+            AsExpression, Expression, SelectableExpression, AppearsOnTable, ValidGrouping,
+        };
+        use diesel::query_builder::{QueryFragment, AstPass};
+        use diesel::sql_types::*;
+        use diesel::internal::sql_functions::*;
+        use super::*;
+        pub struct st_setsrid<geom, srid> {
+            pub(super) geom: geom,
+            pub(super) srid: srid,
+        }
+        const _: () = {
+            use diesel;
+            use diesel::internal::derives::numeric_ops as ops;
+            use diesel::expression::{Expression, AsExpression};
+            use diesel::sql_types::ops::{Add, Sub, Mul, Div};
+            use diesel::sql_types::{SqlType, SingleValue};
+            impl<geom, srid, __Rhs> ::std::ops::Add<__Rhs> for st_setsrid<geom, srid>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Add,
+                <<Self as Expression>::SqlType as Add>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Add>::Rhs>,
+            {
+                type Output = ops::Add<Self, __Rhs::Expression>;
+                fn add(self, rhs: __Rhs) -> Self::Output {
+                    ops::Add::new(self, rhs.as_expression())
+                }
+            }
+            impl<geom, srid, __Rhs> ::std::ops::Sub<__Rhs> for st_setsrid<geom, srid>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Sub,
+                <<Self as Expression>::SqlType as Sub>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Sub>::Rhs>,
+            {
+                type Output = ops::Sub<Self, __Rhs::Expression>;
+                fn sub(self, rhs: __Rhs) -> Self::Output {
+                    ops::Sub::new(self, rhs.as_expression())
+                }
+            }
+            impl<geom, srid, __Rhs> ::std::ops::Mul<__Rhs> for st_setsrid<geom, srid>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Mul,
+                <<Self as Expression>::SqlType as Mul>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Mul>::Rhs>,
+            {
+                type Output = ops::Mul<Self, __Rhs::Expression>;
+                fn mul(self, rhs: __Rhs) -> Self::Output {
+                    ops::Mul::new(self, rhs.as_expression())
+                }
+            }
+            impl<geom, srid, __Rhs> ::std::ops::Div<__Rhs> for st_setsrid<geom, srid>
+            where
+                Self: Expression,
+                Self: Expression,
+                <Self as Expression>::SqlType: Div,
+                <<Self as Expression>::SqlType as Div>::Rhs: SqlType + SingleValue,
+                __Rhs: AsExpression<<<Self as Expression>::SqlType as Div>::Rhs>,
+            {
+                type Output = ops::Div<Self, __Rhs::Expression>;
+                fn div(self, rhs: __Rhs) -> Self::Output {
+                    ops::Div::new(self, rhs.as_expression())
+                }
+            }
+        };
+        #[automatically_derived]
+        impl<geom: ::core::fmt::Debug, srid: ::core::fmt::Debug> ::core::fmt::Debug
+        for st_setsrid<geom, srid> {
+            #[inline]
+            fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                ::core::fmt::Formatter::debug_struct_field2_finish(
+                    f,
+                    "st_setsrid",
+                    "geom",
+                    &self.geom,
+                    "srid",
+                    &&self.srid,
+                )
+            }
+        }
+        #[automatically_derived]
+        impl<geom: ::core::clone::Clone, srid: ::core::clone::Clone> ::core::clone::Clone
+        for st_setsrid<geom, srid> {
+            #[inline]
+            fn clone(&self) -> st_setsrid<geom, srid> {
+                st_setsrid {
+                    geom: ::core::clone::Clone::clone(&self.geom),
+                    srid: ::core::clone::Clone::clone(&self.srid),
+                }
+            }
+        }
+        #[automatically_derived]
+        impl<geom: ::core::marker::Copy, srid: ::core::marker::Copy> ::core::marker::Copy
+        for st_setsrid<geom, srid> {}
+        const _: () = {
+            use diesel;
+            #[allow(non_camel_case_types)]
+            impl<
+                geom: diesel::query_builder::QueryId,
+                srid: diesel::query_builder::QueryId,
+            > diesel::query_builder::QueryId for st_setsrid<geom, srid> {
+                type QueryId = st_setsrid<
+                    <geom as diesel::query_builder::QueryId>::QueryId,
+                    <srid as diesel::query_builder::QueryId>::QueryId,
+                >;
+                const HAS_STATIC_QUERY_ID: bool = <geom as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && <srid as diesel::query_builder::QueryId>::HAS_STATIC_QUERY_ID
+                    && true;
+                const IS_WINDOW_FUNCTION: bool = <geom as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || <srid as diesel::query_builder::QueryId>::IS_WINDOW_FUNCTION
+                    || false;
+            }
+        };
+        ///The return type of [`st_setsrid()`](super::fn_name)
+        pub type HelperType<geom, srid> = st_setsrid<
+            <geom as AsExpression<Geography>>::Expression,
+            <srid as AsExpression<Int4>>::Expression,
+        >;
+        impl<geom, srid> Expression for st_setsrid<geom, srid>
+        where
+            (geom, srid): Expression,
+        {
+            type SqlType = Geography;
+        }
+        impl<geom, srid, __DieselInternal> SelectableExpression<__DieselInternal>
+        for st_setsrid<geom, srid>
+        where
+            geom: SelectableExpression<__DieselInternal>,
+            srid: SelectableExpression<__DieselInternal>,
+            Self: AppearsOnTable<__DieselInternal>,
+        {}
+        impl<geom, srid, __DieselInternal> AppearsOnTable<__DieselInternal>
+        for st_setsrid<geom, srid>
+        where
+            geom: AppearsOnTable<__DieselInternal>,
+            srid: AppearsOnTable<__DieselInternal>,
+            Self: Expression,
+        {}
+        impl<geom, srid, __DieselInternal> FunctionFragment<__DieselInternal>
+        for st_setsrid<geom, srid>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            geom: QueryFragment<__DieselInternal>,
+            srid: QueryFragment<__DieselInternal>,
+        {
+            const FUNCTION_NAME: &'static str = "ST_SetSRID";
+            #[allow(unused_assignments)]
+            fn walk_arguments<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                let mut needs_comma = false;
+                if !self.geom.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.geom.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                if !self.srid.is_noop(out.backend())? {
+                    if needs_comma {
+                        out.push_sql(", ");
+                    }
+                    self.srid.walk_ast(out.reborrow())?;
+                    needs_comma = true;
+                }
+                Ok(())
+            }
+        }
+        impl<geom, srid, __DieselInternal> QueryFragment<__DieselInternal>
+        for st_setsrid<geom, srid>
+        where
+            __DieselInternal: diesel::backend::Backend,
+            geom: QueryFragment<__DieselInternal>,
+            srid: QueryFragment<__DieselInternal>,
+        {
+            fn walk_ast<'__b>(
+                &'__b self,
+                mut out: AstPass<'_, '__b, __DieselInternal>,
+            ) -> QueryResult<()> {
+                out.push_sql(
+                    <Self as FunctionFragment<__DieselInternal>>::FUNCTION_NAME,
+                );
+                out.push_sql("(");
+                self.walk_arguments(out.reborrow())?;
+                out.push_sql(")");
+                Ok(())
+            }
+        }
+        pub struct __Derived<geom, srid>(geom, srid);
+        const _: () = {
+            use diesel;
+            impl<
+                geom,
+                srid,
+                __GroupByClause,
+            > diesel::expression::ValidGrouping<__GroupByClause>
+            for __Derived<geom, srid>
+            where
+                geom: diesel::expression::ValidGrouping<__GroupByClause>,
+                srid: diesel::expression::ValidGrouping<__GroupByClause>,
+                <geom as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate: diesel::expression::MixedAggregates<
+                    <srid as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >,
+            {
+                type IsAggregate = <<geom as diesel::expression::ValidGrouping<
+                    __GroupByClause,
+                >>::IsAggregate as diesel::expression::MixedAggregates<
+                    <srid as diesel::expression::ValidGrouping<
+                        __GroupByClause,
+                    >>::IsAggregate,
+                >>::Output;
+            }
+        };
+        impl<geom, srid, __DieselInternal> ValidGrouping<__DieselInternal>
+        for st_setsrid<geom, srid>
+        where
+            __Derived<geom, srid>: ValidGrouping<__DieselInternal>,
+        {
+            type IsAggregate = <__Derived<
+                geom,
+                srid,
+            > as ValidGrouping<__DieselInternal>>::IsAggregate;
+        }
+    }
+}

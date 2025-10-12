@@ -1075,6 +1075,7 @@ dependencies = [
  "error",
  "paging",
  "percent-encoding",
+ "postgis_diesel",
  "regex",
  "tokio",
 ]
@@ -4238,7 +4239,6 @@ dependencies = [
  "db_utils",
  "diesel_migrations",
  "error",
- "testcontainers",
  "testcontainers-modules",
  "tokio",
  "uuid",
