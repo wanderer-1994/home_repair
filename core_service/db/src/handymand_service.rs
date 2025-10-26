@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use crate::schema::handyman_service;
 use actor_auth::ActorAuth;
 use chrono::NaiveDateTime;
@@ -10,6 +8,7 @@ use entity_type::{
     HandymanAccessGuardId, HandymanId, HandymanServiceId, ServiceLayer1, ServiceLayer2,
 };
 use error::{Error, Result};
+use std::ops::Deref;
 
 #[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = handyman_service)]

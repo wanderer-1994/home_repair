@@ -24,3 +24,6 @@ pub use handyman_profile::*;
 
 mod handyman_service;
 pub use handyman_service::*;
+
+mod schedule;
+pub use schedule::*;

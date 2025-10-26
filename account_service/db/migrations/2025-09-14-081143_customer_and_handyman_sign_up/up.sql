@@ -17,6 +17,7 @@ CREATE TABLE customer_account (
   updated_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
 );
 ALTER SEQUENCE customer_account_id_seq OWNED BY customer_account.id;
+SELECT diesel_manage_updated_at('customer_account');
 CREATE INDEX customer_account_phone_number_idx ON customer_account(phone_number);
 
 -- Spitted from customer_account table because
@@ -30,6 +31,7 @@ CREATE TABLE customer_profile (
   created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
   updated_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
 );
+SELECT diesel_manage_updated_at('customer_profile');
 
 CREATE SEQUENCE handyman_account_id_seq;
 CREATE TABLE handyman_account (
@@ -55,5 +57,6 @@ CREATE TABLE handyman_profile (
   created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
   updated_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')
 );
+SELECT diesel_manage_updated_at('handyman_account');
 CREATE INDEX handyman_profile_first_name_idx ON handyman_profile(first_name);
 CREATE INDEX handyman_profile_last_name_idx ON handyman_profile(last_name);
