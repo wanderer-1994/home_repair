@@ -23,6 +23,7 @@ strum.workspace = true
 strum_macros.workspace = true
 tonic.workspace = true
 prost.workspace = true
+chrono.workspace = true
 
 [build-dependencies]
 tonic-prost-build.workspace = true

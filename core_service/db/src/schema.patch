@@ -1,8 +1,22 @@
-@@ -1,12 +1,12 @@
+@@ -1,65 +1,65 @@
  // @generated automatically by Diesel CLI.
  
  diesel::table! {
-     handyman_expertise (id) {
+     customer_task_request (id) {
+         id -> Int8,
+         customer_id -> Int8,
+-        service -> Text,
++        service -> entity_type::ServiceLayer2Mapping,
+         title -> Text,
+         note -> Nullable<Text>,
+         schedule -> Int8,
+         created_at -> Timestamp,
+         updated_at -> Timestamp,
+     }
+ }
+ 
+ diesel::table! {
+     handyman_service (id) {
          id -> Int8,
          handyman_id -> Int8,
 -        service -> Text,
@@ -12,3 +26,50 @@
          created_at -> Timestamp,
      }
  }
+ 
+ diesel::table! {
+     schedule (id) {
+         id -> Int8,
+-        schedule_type -> Text,
++        schedule_type -> entity_type::ScheduleTypeMapping,
+         created_at -> Timestamp,
+     }
+ }
+ 
+ diesel::table! {
+     schedule_daily_recurrence (id) {
+         id -> Int8,
+-        schedule_type -> Text,
+-        times -> Array<Nullable<Time>>,
++        schedule_type -> entity_type::ScheduleTypeMapping,
++        times -> Array<Time>,
+         updated_at -> Timestamp,
+     }
+ }
+ 
+ diesel::table! {
+     schedule_fixed_time (id) {
+         id -> Int8,
+-        schedule_type -> Text,
++        schedule_type -> entity_type::ScheduleTypeMapping,
+         time -> Timestamp,
+         updated_at -> Timestamp,
+     }
+ }
+ 
+ diesel::table! {
+     schedule_weekly_recurrence (id) {
+         id -> Int8,
+         schedule_id -> Int8,
+-        schedule_type -> Text,
+-        weekday -> Text,
+-        times -> Array<Nullable<Time>>,
++        schedule_type -> entity_type::ScheduleTypeMapping,
++        weekday -> entity_type::WeekdayMapping,
++        times -> Array<Time>,
+         updated_at -> Timestamp,
+     }
+ }
+ 
+ diesel::joinable!(customer_task_request -> schedule (schedule));
+ 

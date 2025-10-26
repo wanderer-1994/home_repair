@@ -1335,6 +1335,7 @@ name = "entity_type"
 version = "0.1.0"
 dependencies = [
  "async-graphql",
+ "chrono",
  "diesel",
  "diesel-derive-enum",
  "diesel-derive-newtype",

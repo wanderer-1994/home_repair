@@ -4,4 +4,6 @@ def_id_newtype! {
     CustomerId,
     HandymanId,
     HandymanServiceId,
+    ScheduleId,
+    CustomerTaskRequestId,
 }

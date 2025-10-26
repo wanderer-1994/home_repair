@@ -1,1 +1,1 @@
-DROP TABLE handyman_expertise;
+DROP TABLE handyman_service;
